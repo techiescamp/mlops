@@ -1,0 +1,116 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+/*  common css  */
+h1, h2, h3 {
+  font-size: 24px;
+  font-family: 'system-ui', sans-serif;
+  color: rgb(105, 13, 120);
+  font-weight: 800;
+  text-align: center;
+}
+
+h1 {
+  font-size: 36px;
+}
+
+h3 {
+  color: rgb(120, 94, 10);
+}
+
+button {
+  margin: 10px auto;
+  display: block;
+  background-color: rgb(27 80 218);
+  color: #fff;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 10px 25px;
+  font-size: 16px;
+  font-family: sans-serif;
+  font-weight: 600;
+}
+
+button:hover {
+  background-color: rgb(10, 59, 184);
+  cursor: pointer;
+}
+
+button.clear {
+  background-color: rgb(207, 21, 21);
+}
+button.clear:hover {
+  cursor: pointer;
+  background-color: rgb(135, 7, 7);
+}
+
+input {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+textarea {
+  width: 100%;
+  height: 250px;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+  overflow: auto;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-size: 16px;
+  font-family: 'system-ui', sans-serif;
+}
+
+textarea:focus, input:focus {
+  outline: none;
+  box-shadow: 0 0 5px 1px rgba(76, 149, 218, 0.5);
+  border-color: #007BFF;
+}
+
+/*  home page  */
+.home-content {
+  width: 85%;
+  margin: 0 auto;
+}
+
+.home-content h3 {
+  text-align: left;
+  color: rgb(136, 59, 12);
+}
+
+.home-content p {
+  font-size: 18px;
+  font-family: system-ui, sans-serif;
+  word-spacing: 1px;
+}
+
+/* copy right */
+#copyright {
+  background-color: green;
+  color: #fff;
+  padding: 5px 25px;
+  position: absolute;
+  right: 10%;
+  bottom: 5%;
+  border-radius: 75px;
+  text-align: center;
+}
+
+#copyright p {
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  font-family: monospace;
+  font-weight: 600;
+}

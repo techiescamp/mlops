@@ -1,6 +1,3 @@
-# mlops
- MLOPS Projects
- 
 # LLM Hugging Face Project
 --------------------------------
 ### Project Requirements
