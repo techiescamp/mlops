@@ -1,0 +1,12 @@
+version: '3.3'
+
+services:
+  llm_client_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: llm_client_app
+    ports:
+      - "3000:80"
+    container_name: llm_client_app_container
+    restart: always
