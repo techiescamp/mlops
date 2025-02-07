@@ -165,6 +165,7 @@ app.post('/api/question-answer', async(req, res) => {
 app.post('/api/table-question-answer', upload.single('file'), async(req, res) => {
     const { ques } = req.body
     const file = req.file
+    console.log(file.path)
 
     if (!file || !fs.existsSync(file.path)) {
         return res.status(400).send('File not found or inaccessible.');
@@ -182,7 +183,6 @@ app.post('/api/table-question-answer', upload.single('file'), async(req, res) =>
             .pipe(csv())
             .on('data', (row) => table.push(row))
             .on('end', async() => {
-                console.log('end part reached')
                 try {
                     const response = await hf.tableQuestionAnswering({
                         model: 'google/tapas-large-finetuned-wtq',
@@ -192,11 +192,10 @@ app.post('/api/table-question-answer', upload.single('file'), async(req, res) =>
                         }
                     });
                     
-                    // Clean up the uploaded file
-                    fs.unlink(file.path, (err) => {
-                        if (err) console.error('Error deleting file:', err);
-                    });
-                    console.log(response)
+                    // // Clean up the uploaded file
+                    // fs.unlink(file.path, (err) => {
+                    //     if (err) console.error('Error deleting file:', err);
+                    // });
                     res.status(200).json(response);
                 } catch (error) {
                     console.error('Error processing query:', error);
@@ -227,8 +226,6 @@ app.post('/api/doc-question-answer', upload.single('file'), async (req, res) => 
     }
 
     if (file.mimetype === 'application/pdf') {
-        console.log('Processing PDF file...');
-
         const pdfParser = new PDFParser(null, 1);
 
         pdfParser.on("pdfParser_dataError", (err) => {
@@ -252,7 +249,6 @@ app.post('/api/doc-question-answer', upload.single('file'), async (req, res) => 
                         }).join(" ")
                     }).join(" ").trim()
                 } 
-                console.log("Extracted PDF Content:", pdfText);
                 if(!pdfText) {
                     pdfText = "No text content found in PDF"
                 }
@@ -271,7 +267,6 @@ app.post('/api/doc-question-answer', upload.single('file'), async (req, res) => 
                     if (err) console.error("Error deleting file:", err);
                 });
 
-                console.log("Response from Hugging Face API:", response);
                 res.status(200).json({ output: response, content: pdfText });
             } catch (err) {
                 console.error("Error during Hugging Face API call:", err);

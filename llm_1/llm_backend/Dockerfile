@@ -2,7 +2,8 @@
 FROM public.ecr.aws/docker/library/node:22-bookworm-slim AS build
 
 # Create app directory and set permissions
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+RUN mkdir -p /home/node/app/node_modules && mkdir -p /home/node/app/uploads && chown -R node:node /home/node/app
+
 WORKDIR /home/node/app
 
 # Copy package.json and install dependencies
@@ -13,6 +14,7 @@ RUN npm install --ignore-scripts
 
 # Copy application and public directory
 COPY ["server.js", "/home/node/app"]
+
 # Ensure /home/node/app/uploads exists and has proper permissions in the build stage
 RUN mkdir -p /home/node/app/uploads && chown -R node:node /home/node/app/uploads
 
