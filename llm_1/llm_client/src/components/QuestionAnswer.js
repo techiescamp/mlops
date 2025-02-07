@@ -2,6 +2,8 @@ import React, { useContext, useState } from 'react'
 import axios from 'axios'
 import { LoadingContext } from '../App'
 
+const apiurl = process.env.REACT_APP_BACKEND_URL
+
 const QuestionAnswer = () => {
     const { loading, setLoading } = useContext(LoadingContext)
 
@@ -13,7 +15,7 @@ const QuestionAnswer = () => {
         e.preventDefault()
         setLoading(true)
         try {
-            const response = await axios.post('http://localhost:5000/api/question-answer', { input, context })
+            const response = await axios.post(`${apiurl}/api/question-answer`, { input, context })
             if(response) setLoading(false)
             setResult(response.data)
         } catch(err) {

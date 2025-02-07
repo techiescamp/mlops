@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     image: llm_client_app
     ports:
-      - "3000:80"
-    container_name: llm_client_app_container
+      - "8080:3000"
+    env_file:
+      - .env
+    container_name: llm_client_react_app
     restart: always
