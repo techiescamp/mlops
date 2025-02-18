@@ -2,6 +2,8 @@ import React, { useContext, useState } from 'react'
 import axios from 'axios'
 import { LoadingContext } from '../App'
 
+const apiurl = process.env.REACT_APP_BACKEND_URL
+
 const Summarize = () => {
     const { loading, setLoading } = useContext(LoadingContext)
     const [text, setText] = useState('')
@@ -11,7 +13,7 @@ const Summarize = () => {
         e.preventDefault()
         setLoading(true)
         try {
-            const response = await axios.post('http://localhost:5000/api/summarize', { text } )
+            const response = await axios.post(`${apiurl}/api/summarize`, { text } )
             if(response) setLoading(false)
             setSummary(response.data)
         } catch(err) {

@@ -1,0 +1,14 @@
+version: '3.3'
+
+services:
+  llm_client_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: llm_client_app
+    ports:
+      - "8080:3000"
+    env_file:
+      - .env
+    container_name: llm_client_react_app
+    restart: always

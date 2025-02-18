@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react'
 import axios from 'axios'
 import { LoadingContext } from '../App'
 
+const apiurl = process.env.REACT_APP_BACKEND_URL
+
 const SentimentAnalysis = () => {
   const { loading, setLoading } = useContext(LoadingContext)
   
@@ -17,7 +19,7 @@ const SentimentAnalysis = () => {
     e.preventDefault()
     setLoading(true)
     try {
-      const response = await axios.post('http://localhost:5000/api/sentiment-analysis', { input })
+      const response = await axios.post(`${apiurl}/api/sentiment-analysis`, { input })
       if(response)  setLoading(false)
       setResult(response.data)
     } catch (err) {

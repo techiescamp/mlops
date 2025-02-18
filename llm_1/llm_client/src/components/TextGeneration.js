@@ -2,6 +2,8 @@ import React, { useContext, useState } from 'react'
 import axios from 'axios'
 import { LoadingContext } from '../App'
 
+const apiurl = process.env.REACT_APP_BACKEND_URL
+
 const TextGeneration = () => {
     const { loading, setLoading } = useContext(LoadingContext)
 
@@ -15,8 +17,8 @@ const TextGeneration = () => {
         e.preventDefault()
         setLoading(true)
         try {
-            // const response = await axios.post('http://localhost:5000/api/text-generation', { textGen: textGen.ques })
-            const response = await axios.post('http://localhost:5000/api/update/text-generation', { textGen: textGen.ques })
+            // const response = await axios.post(`${apiurl}/api/text-generation`, { textGen: textGen.ques })
+            const response = await axios.post(`${apiurl}/api/update/text-generation`, { textGen: textGen.ques })
             if(response) setLoading(false)
             setTextGen({
                 ...textGen, 
