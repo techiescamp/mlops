@@ -10,9 +10,25 @@ class EmployeeAttritionModel:
         self.categories = categories
 
     def predict(self, X):
-        X = pd.DataFrame(X, columns=self.column_names)
+        print('Input data recieved from kserve: ', X)
 
+        # ensure X is a list of dictonaries
+        if isinstance(X, dict):
+            X = [X]
+        elif isinstance(X, list):
+            # If X is already a list, ensure each item is a dictionary
+            if not all(isinstance(item, dict) for item in X):
+                raise ValueError("Input X must be dictionary or list of dictionaries")
+        else:
+            raise ValueError("Input is in other format check that it must in dictionary or list of dictionaries format.")
+
+
+        X = pd.DataFrame(X, columns=self.column_names)
+        print("Dataframe: ", X)
+        
         # apply encoding
+        print('encoder values: ', self.encoder.categories_)
+
         columns_to_encode = ['Work-Life Balance', 'Job Satisfaction', 'Performance Rating', 'Education Level', 'Job Level', 'Company Size', 'Company Reputation', 'Employee Recognition']
         X[columns_to_encode] = self.encoder.transform(X[columns_to_encode]).astype('int')
 

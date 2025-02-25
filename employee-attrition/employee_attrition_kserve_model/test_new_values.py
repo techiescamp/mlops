@@ -84,9 +84,43 @@ def train_model():
     column_names = X.columns.tolist()
     attrition_model = EmployeeAttritionModel(model_lr, scaler, oe, column_names, categories)
 
-    with open("my_model_lr.pkl", "wb") as f:
-        pickle.dump(attrition_model, f)
-        
+    # with open("my_model_lr.pkl", "wb") as f:
+    #     pickle.dump(attrition_model, f)
+    #     # pickle.dump(model_data, f)
+
+    # test with new data
+    X = {
+        "instances": [
+            {
+                "Age": 23,
+                "Years at Company": 4,
+                "Monthly Income": 243442,
+                "Work-Life Balance": "Poor",
+                "Job Satisfaction": "Low",
+                "Performance Rating": "Low",
+                "Number of Promotions": 2,
+                "Overtime": "Yes",
+                "Education Level": "High School",
+                "Number of Dependents": 2,
+                "Job Level": "Entry",
+                "Company Size": "Small",
+                "Company Tenure": 42,
+                "Remote Work": "No",
+                "Company Reputation": "Poor",
+                "Employee Recognition": "Low",
+                "Opportunities": "No"
+            }
+        ]
+    }
+
+    # Extract the instances array
+    instances = X["instances"]
+
+    # Call the predict method
+    predictions = attrition_model.predict(instances)
+    print(predictions)
+
+
 
 if __name__ == "__main__":
     train_model()
