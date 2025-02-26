@@ -90,8 +90,7 @@ def train_model():
 
     # test with new data
     X = {
-        "instances": [
-            {
+        "instances": [{
                 "Age": 23,
                 "Years at Company": 4,
                 "Monthly Income": 243442,
@@ -109,12 +108,13 @@ def train_model():
                 "Company Reputation": "Poor",
                 "Employee Recognition": "Low",
                 "Opportunities": "No"
-            }
-        ]
+        }]
     }
 
-    # Extract the instances array
+    # # Extract the instances array
     instances = X["instances"]
+
+    print('instances output: ', instances)
 
     # Call the predict method
     predictions = attrition_model.predict(instances)

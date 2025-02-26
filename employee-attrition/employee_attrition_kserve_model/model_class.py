@@ -1,5 +1,15 @@
 import pandas as pd
 import numpy as np
+import logging
+
+# configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s [%(filename)s: %(funcName)s():%(lineno)d] %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+logger = logging.getLogger(__name__)
 
 class EmployeeAttritionModel:
     def __init__(self, model, scaler, encoder, column_names, categories):
@@ -10,7 +20,8 @@ class EmployeeAttritionModel:
         self.categories = categories
 
     def predict(self, X):
-        print('Input data recieved from kserve: ', X)
+        # print('Input data recieved from kserve: ', X)
+        logger.info('Raw data recieved from kserve: ', X)
 
         # ensure X is a list of dictonaries
         if isinstance(X, dict):
@@ -23,8 +34,8 @@ class EmployeeAttritionModel:
             raise ValueError("Input is in other format check that it must in dictionary or list of dictionaries format.")
 
 
-        X = pd.DataFrame(X, columns=self.column_names)
-        print("Dataframe: ", X)
+        X = pd.DataFrame(X, columns=self.column_names, index=[0])
+        logger.info("Dataframe: ", X)
         
         # apply encoding
         print('encoder values: ', self.encoder.categories_)
