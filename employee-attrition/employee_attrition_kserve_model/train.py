@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
 import pickle
+import os
 from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
-from model_class import EmployeeAttritionModel
 
 # function-1
 def train_model():
@@ -60,6 +60,9 @@ def train_model():
 
     X['Monthly Income'] = X['Monthly Income'].apply(lambda x: monthly_income_map(x))
 
+    # save colum names
+    column_names = X.columns.tolist()
+
     # splitting the training data 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
@@ -69,24 +72,33 @@ def train_model():
     X_test_scaled = scaler.transform(X_test)
 
     # train model
-    lr = LogisticRegression()
-    model_lr = lr.fit(X_train_scaled, y_train)
+    model = LogisticRegression()
+    model.fit(X_train_scaled, y_train)
 
     # predict model
-    y_pred = model_lr.predict(X_test_scaled)
+    y_pred = model.predict(X_test_scaled)
 
     # metrics
     accuracy = accuracy_score(y_test, y_pred)
+    print("accuracy: %d", accuracy)
     confusion_mat = confusion_matrix(y_test, y_pred)
     classification = classification_report(y_test, y_pred)
 
     # # save model 
-    column_names = X.columns.tolist()
-    attrition_model = EmployeeAttritionModel(model_lr, scaler, oe, column_names, categories)
+    # Save artifacts
+    os.makedirs("models", exist_ok=True)
+    with open("models/model.pkl", "wb") as f:
+        pickle.dump(model, f)
+    with open("models/scaler.pkl", "wb") as f:
+        pickle.dump(scaler, f)
+    with open("models/encoder.pkl", "wb") as f:
+        pickle.dump(oe, f)
+    with open("models/column_names.pkl", "wb") as f:
+        pickle.dump(column_names, f)
+    with open("models/categories.pkl", "wb") as f:
+        pickle.dump(categories, f)
 
-    with open("my_model_lr.pkl", "wb") as f:
-        pickle.dump(attrition_model, f)
-        
+    print("Model and components saved to 'models/'")
 
 if __name__ == "__main__":
     train_model()
