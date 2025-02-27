@@ -28,7 +28,7 @@ def predict():
     # send request to kserve endpoint
     try:
         response = requests.post(KSERVE_ENDPOINT, json=payload)
-        print('res: ', response)
+        print('res: ', response.json())
         if response.status_code == 200:
             response_data = response.json()
             print(response_data)

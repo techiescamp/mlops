@@ -19,27 +19,20 @@ class EmployeeAttritionModel:
         self.column_names = column_names
         self.categories = categories
 
-    def predict(self, X):
-        # print('Input data recieved from kserve: ', X)
-        logger.info('Raw data recieved from kserve: ', X)
+    def predict(self, payload):
+        logger.info('Raw data recieved from kserve: %s', X)
 
-        # ensure X is a list of dictonaries
-        if isinstance(X, dict):
-            X = [X]
-        elif isinstance(X, list):
-            # If X is already a list, ensure each item is a dictionary
-            if not all(isinstance(item, dict) for item in X):
-                raise ValueError("Input X must be dictionary or list of dictionaries")
-        else:
-            raise ValueError("Input is in other format check that it must in dictionary or list of dictionaries format.")
+        if "instances" not in payload:
+            logger.error("Payload missing 'instances' key ")
+            raise ValueError("Payload must contain 'instances' key")
+        
+        instances = payload["instances"]
+        logger.info("Extracted instances: %s ", instances)
 
-
-        X = pd.DataFrame(X, columns=self.column_names, index=[0])
-        logger.info("Dataframe: ", X)
+        X = pd.DataFrame(instances, columns=self.column_names, index=[0])
+        logger.info("Dataframe: %s", X)
         
         # apply encoding
-        print('encoder values: ', self.encoder.categories_)
-
         columns_to_encode = ['Work-Life Balance', 'Job Satisfaction', 'Performance Rating', 'Education Level', 'Job Level', 'Company Size', 'Company Reputation', 'Employee Recognition']
         X[columns_to_encode] = self.encoder.transform(X[columns_to_encode]).astype('int')
 
@@ -53,7 +46,8 @@ class EmployeeAttritionModel:
         # scale the data
         X = self.scaler.transform(X)
 
-        return self.model.predict(X)
+        predictions = self.model.predict(X)
+        return {"predictions": predictions.tolist()} # kserve compatible response
 
 
     def monthly_income_mapping(self, income):
