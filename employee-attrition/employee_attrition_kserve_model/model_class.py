@@ -20,7 +20,7 @@ class EmployeeAttritionModel:
         self.categories = categories
 
     def predict(self, payload):
-        logger.info('Raw data recieved from kserve: %s', X)
+        logger.info('Raw data recieved from kserve: %s', payload)
 
         if "instances" not in payload:
             logger.error("Payload missing 'instances' key ")
