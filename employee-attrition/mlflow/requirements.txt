@@ -1,0 +1,4 @@
+mlflow
+scikit-learn
+azure-storage-blob
+azure-identity
