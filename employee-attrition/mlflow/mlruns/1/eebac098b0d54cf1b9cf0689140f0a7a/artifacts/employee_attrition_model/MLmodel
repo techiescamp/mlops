@@ -1,0 +1,44 @@
+artifact_path: employee_attrition_model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.10.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.5.0
+is_signature_from_type_hint: false
+mlflow_version: 2.20.3
+model_size_bytes: 16708264
+model_uuid: 16bb36c5935b4785a17333c9a243a9b7
+run_id: eebac098b0d54cf1b9cf0689140f0a7a
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "long", "name": "Age", "required": true}, {"type": "long", "name":
+    "Years at Company", "required": true}, {"type": "long", "name": "Monthly Income",
+    "required": true}, {"type": "integer", "name": "Work-Life Balance", "required":
+    true}, {"type": "integer", "name": "Job Satisfaction", "required": true}, {"type":
+    "integer", "name": "Performance Rating", "required": true}, {"type": "long", "name":
+    "Number of Promotions", "required": true}, {"type": "long", "name": "Overtime",
+    "required": true}, {"type": "integer", "name": "Education Level", "required":
+    true}, {"type": "long", "name": "Number of Dependents", "required": true}, {"type":
+    "integer", "name": "Job Level", "required": true}, {"type": "integer", "name":
+    "Company Size", "required": true}, {"type": "long", "name": "Company Tenure",
+    "required": true}, {"type": "long", "name": "Remote Work", "required": true},
+    {"type": "integer", "name": "Company Reputation", "required": true}, {"type":
+    "integer", "name": "Employee Recognition", "required": true}, {"type": "long",
+    "name": "Opportunities", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-03-12 22:01:18.769063'

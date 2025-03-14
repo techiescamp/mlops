@@ -1,0 +1,14 @@
+h1 {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bolder;
+    font-style: italic;
+    color: rgb(12, 128, 31) !important;
+}
+
+table, tr, th {
+    padding: 10px;
+}
+
+#result {
+    display: none;
+}
