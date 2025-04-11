@@ -33,7 +33,7 @@ jobs:
         run: |
           source venv/bin/activate
           # Start server in background 
-          nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+          nohup uvicorn app:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
           echo $! > app.pid
           
           # Give server time to start
