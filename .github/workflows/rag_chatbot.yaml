@@ -48,7 +48,7 @@ jobs:
           fi
           
           # Test query
-          response=$(curl -s -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"question":"What is this application about?"}')
+          response=$(curl -s -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"query":"What is this application about?"}')
           echo "Response: $response"
           
           # Verify response is valid JSON
