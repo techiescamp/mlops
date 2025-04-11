@@ -21,6 +21,7 @@ jobs:
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
+          pip install huggingface_hub[hf_xet] hf_xet
 
       - name: Create .env file from GitHub Secrets
         run: |
