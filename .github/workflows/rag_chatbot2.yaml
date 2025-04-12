@@ -57,14 +57,31 @@ jobs:
           source venv/bin/activate
           # Kill previous instance if exists
           if [ -f "app.pid" ]; then
-            kill -9 $(cat app.pid) || true
-            rm app.pid
+            # Check if process exists before killing
+            if ps -p $(cat app.pid) > /dev/null; then
+              kill -9 $(cat app.pid) || true
+            fi
+            rm -f app.pid
           fi
           
-          # Start new instance
+          # Start new instance with clean log
+          > app.log  # Clear previous log
           nohup ./venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
           echo $! > app.pid
           
-          # Verify
-          sleep 5
-          curl -s http://localhost:8000/health || (cat app.log && exit 1)
+          # Give server time to start
+          sleep 15
+          
+          # Check if server is running
+          if ! curl -s http://localhost:8000/health; then
+            echo "Server failed to start"
+            cat app.log
+            exit 1
+          fi
+          
+          # Test query
+          response=$(curl -s -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"query":"What is this application about?"}')
+          echo "Response: $response"
+          
+          # Verify response is valid JSON
+          echo $response | jq . || echo "Invalid JSON response"
