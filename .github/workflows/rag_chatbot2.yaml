@@ -1,0 +1,70 @@
+name: RAG Chatbot Pipeline2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-chatbot:
+    runs-on: mlops
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false # Important for subsequent git pulls
+
+      - name: Set up persistent environment
+        run: |
+          PERSISTENT_DIR="/home/azureuser/rag_chatbot"
+          
+          # Initialize if first run
+          if [ ! -d "$PERSISTENT_DIR/.git" ]; then
+            mkdir -p $PERSISTENT_DIR
+            git clone $GITHUB_SERVER_URL/$GITHUB_REPOSITORY $PERSISTENT_DIR
+          fi
+          
+          cd $PERSISTENT_DIR
+          
+          # Pull latest changes
+          git config --global --add safe.directory $PERSISTENT_DIR
+          git pull origin main
+          git reset --hard HEAD
+
+      - name: Set up Python environment
+        run: |
+          cd /home/azureuser/rag_chatbot
+          
+          # Reuse existing venv or create new
+          if [ ! -d "venv" ]; then
+            python3 -m venv venv
+          fi
+          
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install huggingface_hub[hf_xet] hf_xet
+
+      - name: Configure environment
+        run: |
+          cd /home/azureuser/rag_chatbot
+          echo "AZURE_ENDPOINT=${{ secrets.AZURE_ENDPOINT }}" > .env
+          echo "AZURE_API_KEY=${{ secrets.AZURE_API_KEY }}" >> .env
+          echo "AZURE_DEPLOYMENT=gpt-4o-mini" >> .env
+          echo "OPENAI_API_VERSION=2024-05-01-preview" >> .env
+
+      - name: Restart application
+        run: |
+          cd /home/azureuser/rag_chatbot
+          
+          # Kill previous instance if exists
+          if [ -f "app.pid" ]; then
+            kill -9 $(cat app.pid) || true
+            rm app.pid
+          fi
+          
+          # Start new instance
+          nohup ./venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+          echo $! > app.pid
+          
+          # Verify
+          sleep 5
+          curl -s http://localhost:8000/health || (cat app.log && exit 1)
