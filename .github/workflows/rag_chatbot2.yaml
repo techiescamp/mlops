@@ -51,37 +51,34 @@ jobs:
           echo "AZURE_DEPLOYMENT=gpt-4o-mini" >> .env
           echo "OPENAI_API_VERSION=2024-05-01-preview" >> .env
 
-      - name: Restart application
+      - name: Configure systemd service  # <-- Add this new step
         run: |
-          cd /home/azureuser/rag_chatbot/rag_chatbot 
-          source venv/bin/activate
-          # Kill previous instance if exists
-          if [ -f "app.pid" ]; then
-            # Check if process exists before killing
-            if ps -p $(cat app.pid) > /dev/null; then
-              kill -9 $(cat app.pid) || true
-            fi
-            rm -f app.pid
-          fi
-          
-          # Start new instance with clean log
-          > app.log  # Clear previous log
-          setsid nohup ./venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
-          echo $! > app.pid
-          
-          # Give server time to start
-          sleep 15
-          
-          # Check if server is running
-          if ! curl -s http://localhost:8000/health; then
-            echo "Server failed to start"
-            cat app.log
-            exit 1
-          fi
-          
-          # Test query
-          response=$(curl -s -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"query":"What is this application about?"}')
-          echo "Response: $response"
-          
-          # Verify response is valid JSON
-          echo $response | jq . || echo "Invalid JSON response"
+          # Create systemd service file
+          sudo tee /etc/systemd/system/rag_chatbot.service <<EOF
+          [Unit]
+          Description=RAG Chatbot Service
+          After=network.target
+
+          [Service]
+          User=azureuser
+          WorkingDirectory=/home/azureuser/rag_chatbot/rag_chatbot
+          Environment="PATH=/home/azureuser/rag_chatbot/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+          ExecStart=/home/azureuser/rag_chatbot/rag_chatbot/venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000
+          Restart=always
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+          # Reload and enable service
+          sudo systemctl daemon-reload
+          sudo systemctl enable rag_chatbot.service
+
+      - name: Restart application  # <-- Modified restart step
+        run: |
+          # This will now use systemctl instead of direct nohup
+          sudo systemctl restart rag_chatbot.service
+          sleep 5
+          sudo systemctl status rag_chatbot.service
+          curl -s http://localhost:8000/health || (journalctl -u rag_chatbot.service -n 50 && exit 1)
