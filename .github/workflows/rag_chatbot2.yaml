@@ -54,7 +54,7 @@ jobs:
       - name: Restart application
         run: |
           cd /home/azureuser/rag_chatbot/rag_chatbot 
-          
+          source venv/bin/activate
           # Kill previous instance if exists
           if [ -f "app.pid" ]; then
             kill -9 $(cat app.pid) || true
