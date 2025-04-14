@@ -24,7 +24,7 @@ Deploy:
 ## Project Workflow
 -----------------------------------------------------------------------------------
 
-![rag-workflow-gif](/assets/rag-1.gif)
+![rag-workflow-gif](assets/rag-1.gif)
 
 
 ## Getting Started
@@ -33,6 +33,7 @@ To set up and run the project, follow these steps:
 
 **Prerequisites**
 - Python 3.10+
+- Node for frontend v 22.14.0
 - Install dependencies: `pip install -r requirements.txt`
 - Azure OpenAI API credentials (set in a .env file)
 - Markdown files in the docs/ directory
@@ -102,43 +103,71 @@ uvicorn main:app --reload
 }
 ```
 
+### For Frontend Setup
+
+- If you are in different folder => `rag_Chatbot/frontend/` 
+- If you are in same folder => `frontend/`
+
+```bash
+cd frontend
+```
+
+- Install dependencies
+```bash
+npm install
+```
+
+- Run the frontend application
+```bash
+npm start (for developement environement)
+
+or
+
+npm run build (for production environment)
+```
+
 
 ### Detailed Explanation of Workflow
 ----------------------------------------------------------------------------
-### Client (Frontend):
-    The process starts with a client (e.g., a React app at http://localhost:3000) sending requests to the FastAPI backend.
+### Client (Frontend)
+The process starts with a client (e.g., a React app at http://localhost:3000) sending requests to the FastAPI backend.
 
-### FastAPI Application:
-    The entry point is the FastAPI app, which handles CORS middleware and main endpoint:
-        - `POST /query:` The core endpoint for processing user queries with the RAG pipeline.
+### FastAPI Application
+The entry point is the FastAPI app, which handles CORS middleware and main endpoint:
+`POST /query:` The core endpoint for processing user queries with the RAG pipeline.
 
-### Query Processing (POST /query):
-    - The client sends a JSON payload (e.g., {"query": "What is memoization?") to /query.
-    - The request is validated using QueryRequest (Pydantic model).
+### Query Processing (POST /query)
+The client sends a JSON payload (e.g., {"query": "What is memoization?"}) to /query.
+The request is validated using QueryRequest (Pydantic model).
 
-### RAG Pipeline:
-    - `Load Markdown Docs`: load_md_files() reads .md files from the docs/ directory into memory as a list of dictionaries (filename and content).
-    - `Text Splitting`: text_splitter() uses RecursiveCharacterTextSplitter to break the Markdown content into smaller chunks (500 characters, 100 overlap), creating Document objects with metadata.
-    - `Vector Store (FAISS)`: load_vector_store() either loads an existing FAISS index from ./faiss-db or creates a new one using embeddings from HuggingFaceEmbeddings (all-MiniLM-L6-v2 model).
-    - `Retriever`: retrieve_documents() configures the FAISS vector store as a retriever to fetch the top 3 relevant document chunks based on the query.
-    - `Memory`: create_memory() initializes ConversationBufferMemory to store the last 5 question-answer pairs, maintaining chat history.
-    - `Augmentation Chain`: augmentation() builds a chain with:
-        - A ChatPromptTemplate combining chat history, context (retrieved docs), and the query.
-        - Then sed `chaining` feature of langchain to combine the events of fetching files to calling LLM model:
-            - The retriever to fetch context.
-            - The AzureChatOpenAI LLM to generate answers.
-            - A StrOutputParser to format the output.
-            - AzureChatOpenAI LLM: The LLM (configured with Azure credentials from .env) processes the prompt and generates a response based on the context and history.
+### RAG Pipeline
+`Load Markdown Docs`: load_md_files() reads .md files from the docs/ directory into memory as a list of dictionaries (filename and content).
 
-### Cost Estimation:
+`Text Splitting`: text_splitter() uses RecursiveCharacterTextSplitter to break the Markdown content into smaller chunks (500 characters, 100 overlap), creating Document objects with metadata.
+
+`Vector Store (FAISS)`: load_vector_store() either loads an existing FAISS index from ./faiss-db or creates a new one using embeddings from HuggingFaceEmbeddings (all-MiniLM-L6-v2 model).
+
+`Retriever`: retrieve_documents() configures the FAISS vector store as a retriever to fetch the top 3 relevant document chunks based on the query.
+
+`Memory`: create_memory() initializes ConversationBufferMemory to store the last 5 question-answer pairs, maintaining chat history.
+
+`Augmentation Chain`: augmentation() builds a chain with:
+    - A ChatPromptTemplate combining chat history, context (retrieved docs), and the query.
+    - Then set `chaining` feature of langchain to combine the events of fetching files to calling LLM model:
+        - The retriever to fetch context.
+        - The AzureChatOpenAI LLM to generate answers.
+        - A StrOutputParser to format the output.
+        - AzureChatOpenAI LLM: The LLM (configured with Azure credentials from .env) processes the prompt and generates a response based on the context and history.
+
+### Cost Estimation
 `estimate_cost()`: This function uses tiktoken to count input and output tokens, calculating the cost based on predefined rates (INPUT_TOKEN_COST and OUTPUT_TOKEN_COST).
 
-### Response Generation:
-    The response includes:
-        `answer`: The LLM-generated response.
-        `sources`: Metadata of retrieved documents (e.g., filenames and chunk IDs).
-        `input_tokens, output_tokens, estimated_cost`: Token usage and cost details.
-    The query and answer are saved to memory for future context.
+### Response Generation
+The response includes:
+    `answer`: The LLM-generated response.
+    `sources`: Metadata of retrieved documents (e.g., filenames and chunk IDs).
+    `input_tokens, output_tokens, estimated_cost`: Token usage and cost details.
+The query and answer are saved to memory for future context.
 
 
 ### Why Use This Chatbot?
@@ -149,7 +178,7 @@ uvicorn main:app --reload
 - **Cost-Conscious:** Tracks token usage and estimates costs for Azure OpenAI API calls.
 - **Customizable:** Easily adapt the pipeline to other document formats or LLMs.
 
-### Return Response to Client:
+### Return Response to Client
     The FastAPI app sends the JSON response back to the client.
 
 ### Contributing
