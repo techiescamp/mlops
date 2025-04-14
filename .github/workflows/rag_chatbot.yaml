@@ -1,0 +1,55 @@
+name: RAG Chatbot Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-chatbot:
+    runs-on: mlops
+    defaults:
+      run:
+        working-directory: rag_chatbot
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up virtual environment & install dependencies
+        run: |
+          set -euxo pipefail
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install huggingface_hub[hf_xet] hf_xet
+
+      - name: Create .env file from GitHub Secrets
+        run: |
+          echo "AZURE_ENDPOINT=${{ secrets.AZURE_ENDPOINT }}" >> .env
+          echo "AZURE_API_KEY=${{ secrets.AZURE_API_KEY }}" >> .env
+          echo "AZURE_DEPLOYMENT=gpt-4o-mini" >> .env
+          echo "OPENAI_API_VERSION=2024-05-01-preview" >> .env
+
+      - name: Start and Test FastAPI App
+        run: |
+          source venv/bin/activate
+          # Start server in background 
+          nohup uvicorn app:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+          echo $! > app.pid
+          
+          # Give server time to start
+          sleep 15
+          
+          # Check if server is running
+          if ! curl -s http://localhost:8000/health; then
+            echo "Server failed to start"
+            cat app.log
+            exit 1
+          fi
+          
+          # Test query
+          response=$(curl -s -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"query":"What is this application about?"}')
+          echo "Response: $response"
+          
+          # Verify response is valid JSON
+          echo $response | jq . || echo "Invalid JSON response"
