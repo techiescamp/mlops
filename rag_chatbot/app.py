@@ -39,6 +39,7 @@ def count_tokens(text, model):
     encoding = tiktoken.encoding_for_model(model)
     return len(encoding.encode(text))
 
+
 # Cost estimation
 def estimate_cost(input_text, output_text):
     input_tokens = count_tokens(input_text, AZURE_DEPLOYMENT)
