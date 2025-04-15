@@ -1,0 +1,59 @@
+name: RAG Frontend Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-frontend:
+    runs-on: mlops
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Install frontend dependencies
+        run: |
+          cd /home/azureuser/rag_chatbot/rag_chatbot/frontend
+          npm install
+
+      - name: Replace localhost with public IP in Chatbot.jsx
+        run: |
+          cd /home/azureuser/rag_chatbot/rag_chatbot/frontend/src/components
+          PUBLIC_IP=$(curl -s ifconfig.me)
+
+          # Replace only if localhost is present
+          if grep -q "http://localhost:8000" Chatbot.jsx; then
+            sed -i "s|http://localhost:8000|http://$PUBLIC_IP:8000|g" Chatbot.jsx
+            echo "Updated Chatbot.jsx with $PUBLIC_IP"
+          else
+            echo "Public IP already set. Skipping replacement."
+          fi
+
+      - name: Configure systemd service for frontend
+        run: |
+          sudo tee /etc/systemd/system/rag_frontend.service <<EOF
+          [Unit]
+          Description=RAG Frontend Service
+          After=network.target
+
+          [Service]
+          User=azureuser
+          WorkingDirectory=/home/azureuser/rag_chatbot/rag_chatbot/frontend
+          ExecStart=/usr/bin/npm start
+          Restart=always
+          RestartSec=5
+          Environment=PATH=/usr/bin:/bin:/usr/local/bin
+          Environment=NODE_ENV=production
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+          sudo systemctl daemon-reload
+          sudo systemctl enable rag_frontend.service
+
+      - name: Restart frontend service
+        run: |
+          sudo systemctl restart rag_frontend.service
