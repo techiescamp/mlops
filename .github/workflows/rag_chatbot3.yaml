@@ -1,4 +1,4 @@
-name: RAG Chatbot Pipeline2
+name: RAG Chatbot Pipeline3
 
 on:
   workflow_dispatch:
