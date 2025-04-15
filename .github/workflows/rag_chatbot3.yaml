@@ -6,52 +6,64 @@ on:
 jobs:
   run-chatbot:
     runs-on: mlops
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          persist-credentials: false # Important for subsequent git pulls
+          persist-credentials: false
 
       - name: Set up persistent environment
         run: |
           PERSISTENT_DIR="/home/azureuser/rag_chatbot"
           
-          # Initialize if first run
           if [ ! -d "$PERSISTENT_DIR/.git" ]; then
+            echo "Cloning repository for the first time..."
             mkdir -p $PERSISTENT_DIR
             git clone $GITHUB_SERVER_URL/$GITHUB_REPOSITORY $PERSISTENT_DIR
+          else
+            echo "Repo exists. Pulling latest changes..."
+            cd $PERSISTENT_DIR
+            git config --global --add safe.directory $PERSISTENT_DIR
+            git reset --hard
+            git pull origin main
           fi
-          
-          cd $PERSISTENT_DIR
-          
-          # Pull latest changes
-          git config --global --add safe.directory $PERSISTENT_DIR
-          git pull origin main
-          git reset --hard HEAD
 
       - name: Set up Python environment
         run: |
-          cd /home/azureuser/rag_chatbot/rag_chatbot 
+          cd /home/azureuser/rag_chatbot/rag_chatbot
           
-          # Reuse existing venv or create new
           if [ ! -d "venv" ]; then
             python3 -m venv venv
           fi
           
           source venv/bin/activate
-          pip3 install -r requirements.txt
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Configure environment
         run: |
-          cd /home/azureuser/rag_chatbot/rag_chatbot 
+          cd /home/azureuser/rag_chatbot/rag_chatbot
           echo "AZURE_ENDPOINT=${{ secrets.AZURE_ENDPOINT }}" > .env
           echo "AZURE_API_KEY=${{ secrets.AZURE_API_KEY }}" >> .env
           echo "AZURE_DEPLOYMENT=gpt-4o-mini" >> .env
           echo "OPENAI_API_VERSION=2024-05-01-preview" >> .env
 
-      - name: Configure systemd service  # <-- Add this new step
+      - name: Replace localhost with public IP in app.py
         run: |
-          # Create systemd service file
+          cd /home/azureuser/rag_chatbot/rag_chatbot
+          PUBLIC_IP=$(curl -s ifconfig.me)
+
+          # Check if localhost is still present before replacing
+          if grep -q "http://localhost:3000" app.py; then
+            sed -i "s|http://localhost:3000|http://$PUBLIC_IP:3000|g" app.py
+            echo "Replaced localhost with $PUBLIC_IP"
+          else
+            echo "Public IP already updated. Skipping replacement."
+          fi
+
+      - name: Configure systemd service
+        run: |
           sudo tee /etc/systemd/system/rag_chatbot.service <<EOF
           [Unit]
           Description=RAG Chatbot Service
@@ -60,7 +72,7 @@ jobs:
           [Service]
           User=azureuser
           WorkingDirectory=/home/azureuser/rag_chatbot/rag_chatbot
-          Environment="PATH=/home/azureuser/rag_chatbot/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+          Environment="PATH=/home/azureuser/rag_chatbot/rag_chatbot/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
           ExecStart=/home/azureuser/rag_chatbot/rag_chatbot/venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000
           Restart=always
           RestartSec=5
@@ -69,11 +81,9 @@ jobs:
           WantedBy=multi-user.target
           EOF
 
-          # Reload and enable service
           sudo systemctl daemon-reload
           sudo systemctl enable rag_chatbot.service
 
-      - name: Restart application  # <-- Modified restart step
+      - name: Restart chatbot service
         run: |
-          # This will now use systemctl instead of direct nohup
           sudo systemctl restart rag_chatbot.service
