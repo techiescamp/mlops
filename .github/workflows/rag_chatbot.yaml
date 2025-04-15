@@ -1,4 +1,4 @@
-name: RAG Chatbot Pipeline
+name: RAG Chatbot Pipeline3
 
 on:
   workflow_dispatch:
@@ -6,50 +6,129 @@ on:
 jobs:
   run-chatbot:
     runs-on: mlops
-    defaults:
-      run:
-        working-directory: rag_chatbot
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false
 
-      - name: Set up virtual environment & install dependencies
+      - name: Set up persistent environment
         run: |
-          set -euxo pipefail
-          python3 -m venv venv
+          PERSISTENT_DIR="/home/azureuser/rag_chatbot"
+          
+          if [ ! -d "$PERSISTENT_DIR/.git" ]; then
+            echo "Cloning repository for the first time..."
+            mkdir -p $PERSISTENT_DIR
+            git clone $GITHUB_SERVER_URL/$GITHUB_REPOSITORY $PERSISTENT_DIR
+          else
+            echo "Repo exists. Pulling latest changes..."
+            cd $PERSISTENT_DIR
+            git config --global --add safe.directory $PERSISTENT_DIR
+            git reset --hard
+            git pull origin main
+          fi
+
+      - name: Set up Python environment
+        run: |
+          cd /home/azureuser/rag_chatbot/rag_chatbot
+          
+          if [ ! -d "venv" ]; then
+            python3 -m venv venv
+          fi
+          
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install huggingface_hub[hf_xet] hf_xet
 
-      - name: Create .env file from GitHub Secrets
+      - name: Configure environment
         run: |
-          echo "AZURE_ENDPOINT=${{ secrets.AZURE_ENDPOINT }}" >> .env
+          cd /home/azureuser/rag_chatbot/rag_chatbot
+          echo "AZURE_ENDPOINT=${{ secrets.AZURE_ENDPOINT }}" > .env
           echo "AZURE_API_KEY=${{ secrets.AZURE_API_KEY }}" >> .env
           echo "AZURE_DEPLOYMENT=gpt-4o-mini" >> .env
           echo "OPENAI_API_VERSION=2024-05-01-preview" >> .env
 
-      - name: Start and Test FastAPI App
+      - name: Replace localhost with public IP in app.py
         run: |
-          source venv/bin/activate
-          # Start server in background 
-          nohup uvicorn app:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
-          echo $! > app.pid
-          
-          # Give server time to start
-          sleep 15
-          
-          # Check if server is running
-          if ! curl -s http://localhost:8000/health; then
-            echo "Server failed to start"
-            cat app.log
-            exit 1
+          cd /home/azureuser/rag_chatbot/rag_chatbot
+          PUBLIC_IP=$(curl -s ifconfig.me)
+
+          # Check if localhost is still present before replacing
+          if grep -q "http://localhost:3000" app.py; then
+            sed -i "s|http://localhost:3000|http://$PUBLIC_IP:3000|g" app.py
+            echo "Replaced localhost with $PUBLIC_IP"
+          else
+            echo "Public IP already updated. Skipping replacement."
           fi
-          
-          # Test query
-          response=$(curl -s -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"query":"What is this application about?"}')
-          echo "Response: $response"
-          
-          # Verify response is valid JSON
-          echo $response | jq . || echo "Invalid JSON response"
+
+      - name: Configure systemd service
+        run: |
+          sudo tee /etc/systemd/system/rag_chatbot.service <<EOF
+          [Unit]
+          Description=RAG Chatbot Service
+          After=network.target
+
+          [Service]
+          User=azureuser
+          WorkingDirectory=/home/azureuser/rag_chatbot/rag_chatbot
+          Environment="PATH=/home/azureuser/rag_chatbot/rag_chatbot/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+          ExecStart=/home/azureuser/rag_chatbot/rag_chatbot/venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000
+          Restart=always
+          RestartSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+          sudo systemctl daemon-reload
+          sudo systemctl enable rag_chatbot.service
+
+      - name: Restart chatbot service
+        run: |
+          sudo systemctl restart rag_chatbot.service
+
+      - name: Install frontend dependencies
+        run: |
+          cd /home/azureuser/rag_chatbot/rag_chatbot/frontend
+          npm install
+
+      - name: Replace localhost with public IP in Chatbot.jsx
+        run: |
+          cd /home/azureuser/rag_chatbot/rag_chatbot/frontend/src/components
+          PUBLIC_IP=$(curl -s ifconfig.me)
+
+          # Replace only if localhost is present
+          if grep -q "http://localhost:8000" Chatbot.jsx; then
+            sed -i "s|http://localhost:8000|http://$PUBLIC_IP:8000|g" Chatbot.jsx
+            echo "Updated Chatbot.jsx with $PUBLIC_IP"
+          else
+            echo "Public IP already set. Skipping replacement."
+          fi
+
+      - name: Configure systemd service for frontend
+        run: |
+          sudo tee /etc/systemd/system/rag_frontend.service <<EOF
+          [Unit]
+          Description=RAG Frontend Service
+          After=network.target
+
+          [Service]
+          User=azureuser
+          WorkingDirectory=/home/azureuser/rag_chatbot/rag_chatbot/frontend
+          ExecStart=/usr/bin/npm start
+          Restart=always
+          RestartSec=5
+          Environment=PATH=/usr/bin:/bin:/usr/local/bin
+          Environment=NODE_ENV=production
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+          sudo systemctl daemon-reload
+          sudo systemctl enable rag_frontend.service
+
+      - name: Restart frontend service
+        run: |
+          sudo systemctl restart rag_frontend.service
