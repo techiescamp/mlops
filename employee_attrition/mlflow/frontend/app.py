@@ -14,8 +14,8 @@ CORS(app)
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
 
 model_name = "Employee Attrition Model"
-model_version = "3"
-run_id = "bdda2dfd55454b9694bef6653ebbbe64"
+model_version = "4"
+run_id = "99f96adb9c53410aa78a161033ac379e"
 model = mlflow.pyfunc.load_model(f"models:/{model_name}/{model_version}")
 
 # download artifacts

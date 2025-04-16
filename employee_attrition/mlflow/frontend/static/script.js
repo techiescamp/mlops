@@ -19,6 +19,6 @@ document.getElementById('prediction_form').addEventListener('submit', (e) => {
         console.log(result)
         const showResult = document.getElementById('result')
         showResult.style.display = 'block'
-        showResult.innerHTML = `<b>Prediction:</b> ${result.Prediction}`
+        showResult.innerHTML = `<b>Prediction:</b> ${result.prediction}`
     })
 })
