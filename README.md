@@ -1,32 +1,54 @@
 # MLOPS Projects
-----------------------------------------
 
-## OVerview
+<div alig='center'>
+    ![GitHub contributors](https://img.shields.io/github/contributors/:user/:repo)
+    [![Last Commit](https://img.shields.io/github/last-commit/techiescamp/mlops)](https://github.com/techiescamp/mlops/commits/main)
+    [![Python Version](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org/downloads/)
+    [![License](https://img.shields.io/github/license/techiescamp/mlops)](https://github.com/techiescamp/mlops/blob/main/LICENSE)
+</div>
+
+## Overview
 
 This repository provides a comprehensive approach to Machine Learning Operations (MLOps), integrating machine learning models into production with automation, monitoring, and scalability. It covers best practices, CI/CD pipelines, model versioning, and deployment strategies.
 
-## Projects
+
+## Table of Contents
+- [Introduction](#introduction)
+- [Projects In this Repo](#projects)
+- [Installation](#installation)
+- [Future Enhancements](#future-enhancements)
+- [Contribution](#contribution)
+- [License](#license)
+
+## Introduction
 
 This repository includes multiple MLOps projects, each focusing on different aspects of machine learning model development, deployment, and monitoring. The projects are structured as follows:
 
-### **Employee Attrition Prediction**
+## Projects In this Repo
 
-        - Uses Logistic Regression for predicting employee attrition.
-        - Implements Flask for web-based model interaction.
-        - Features automated data preprocessing, model training, and deployment using Docker and Kubernetes.
+### **1. Employee Attrition Prediction**
+    - Uses Logistic Regression for predicting employee attrition.
+    - Implements Flask for web-based model interaction.
+    - Features automated data preprocessing, model training, and deployment using Docker and Kubernetes.
 
-### **LLM-Based Simple models using Hugging Face**
+### **2. LLM-Based Simple models using Hugging Face**
+    - Built simple LLM project using Hugging Face's open source models on
+        - text summarization, 
+        - text generation, 
+        - sentiment-analysis, 
+        - question-answering and 
+        - table question-answering models
 
-        - Built simple LLM project using Hugging Face's open source models on
-            - text summarization, 
-            - text generation, 
-            - sentiment-analysis, 
-            - question-answering and 
-            - table question-answering models
+    - Deployed via `React` (frontend) and `Node.js,Express.js` (backend) for seamless user experience.
 
-        - Deploys via `React` (frontend) and `Node.js,Express.js` (backend) for seamless user experience.
+### **3. RAG project**
+The Retrieval-Augmented Generation (RAG) workflow enhances efficiency by dynamically fetching relevant data from a knowledge base and integrating it with a language model to produce precise, context-aware responses, eliminating the need for extensive retraining.
 
-## Installation & Setup
+    - Developed DocuMancer AI, utilizing the RAG workflow to retrieve content from GitHub .md files.
+    - Optimized DocuMancer AI by streamlining the RAG workflow for seamless processing of Kubernetes documentation.
+
+
+## Installation
 
 **Prerequisites**
 
@@ -55,8 +77,8 @@ This repository includes multiple MLOps projects, each focusing on different asp
 
     Go to directory on which project you needed and start working on it.
 
-## Future Enhancement
 
+## Future Enhancements
     - Automated ML Pipelines using DVC & MLflow.
     - Continuous Integration & Deployment (CI/CD) with GitHub Actions.
     - Model Versioning and tracking experiments.
@@ -64,8 +86,11 @@ This repository includes multiple MLOps projects, each focusing on different asp
     - Monitoring & Logging with Prometheus & Grafana.
 
 
+## Contribution
+We welcome contributions from the security community. Please read our [Contributing Guidelines](contribution.md) before submitting pull requests.
+
+
 ## License
 
 This project is open-source and available under the MIT License.
-**&copy; www.techiescamp.com/**
-
+[&copy;2025 www.techiescamp.com/](www.techiescamp.com/)

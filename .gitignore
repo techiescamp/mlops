@@ -1,2 +1,4 @@
 .env
 .DS_Store
+./filename_embeddings.pkl
+./example.py
