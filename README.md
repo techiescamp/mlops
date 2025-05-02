@@ -1,6 +1,6 @@
 # MLOPS Projects
 
-<div alig='center'>
+<div align="center">
     ![GitHub contributors](https://img.shields.io/github/contributors/:user/:repo)
     [![Last Commit](https://img.shields.io/github/last-commit/techiescamp/mlops)](https://github.com/techiescamp/mlops/commits/main)
     [![Python Version](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org/downloads/)
