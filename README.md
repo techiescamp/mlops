@@ -1,10 +1,10 @@
 # MLOPS Projects
 
 <div align="center">
-    ![GitHub contributors](https://img.shields.io/github/contributors/:user/:repo)
-    [![Last Commit](https://img.shields.io/github/last-commit/techiescamp/mlops)](https://github.com/techiescamp/mlops/commits/main)
-    [![Python Version](https://img.shields.io/badge/python-3.13-blue)](https://www.python.org/downloads/)
-    [![License](https://img.shields.io/github/license/techiescamp/mlops)](https://github.com/techiescamp/mlops/blob/main/LICENSE)
+[![GitHub Contributors](https://img.shields.io/github/contributors/techiescamp/mlops)](https://github.com/techiescamp/mlops)
+[![Last Commit](https://img.shields.io/github/last-commit/techiescamp/mlops)](https://github.com/techiescamp/mlops/commits/main)
+[![Python Version](https://img.shields.io/badge/python-3.x-blue)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/github/license/techiescamp/mlops)](https://github.com/techiescamp/mlops/blob/main/LICENSE)
 </div>
 
 ## Overview
