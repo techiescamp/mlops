@@ -1,4 +1,8 @@
 # MLOPS Projects
+<p align="center">
+  [![GitHub Stars](https://img.shields.io/github/stars/octocat/hello-world.svg?style=for-the-badge)](https://github.com/octocat/hello-world/stargazers)
+  [![GitHub Forks](https://img.shields.io/github/forks/octocat/hello-world.svg?style=for-the-badge)](https://github.com/octocat/hello-world/network)
+</p>
 
 <p align="center">
     [![GitHub Contributors](https://img.shields.io/github/contributors/techiescamp/mlops)](https://github.com/techiescamp/mlops)
