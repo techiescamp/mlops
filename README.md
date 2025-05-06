@@ -6,7 +6,6 @@
   <img src="https://img.shields.io/github/contributors/techiescamp/mlops.svg?style=for-the-badge" alt="Contributors" />
   <img src="https://img.shields.io/github/last-commit/techiescamp/mlops.svg?style=for-the-badge" alt="Last Commit" />
   <img src="https://img.shields.io/badge/python-3.x-blue?style=for-the-badge" alt="Python Version" />
-  <img src="https://img.shields.io/github/license/techiescamp/mlops.svg?style=for-the-badge" alt="License" />
 </div>
 
 ## Overview
