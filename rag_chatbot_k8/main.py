@@ -74,7 +74,7 @@ async def query_rag(request: QueryRequest):
     try:
         query = request.query
         # testing
-        isEvaluate = request.isEvaluate
+        is_need_evaluation = request.isEvaluate
         
         # select relevant documents
         selected_files = document_loader.select_relevant_files(query, top_k=10)
@@ -110,7 +110,7 @@ async def query_rag(request: QueryRequest):
         evaluation = {}
         # retrieved_docs = documetns retrieved from RAG component
         # selected_Docs = docs selected at starting of the pipeline before RAG component
-        if isEvaluate:
+        if is_need_evaluation:
             evaluation = runtime_evaluator.evaluate(query=query, retrieved_docs=search_docs, selected_docs=documents, answer=result, context=context)
             print("Performance Evaluation: \n", evaluation)
 
@@ -120,7 +120,7 @@ async def query_rag(request: QueryRequest):
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "estimated_cost": cost,
-            "evaluation": evaluation if isEvaluate else None,
+            "evaluation": evaluation if is_need_evaluation else None,
         }
     except Exception as e:
         print(f"Error processing query: {str(e)}")
@@ -133,4 +133,3 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-    

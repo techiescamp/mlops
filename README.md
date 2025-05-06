@@ -1,15 +1,13 @@
 # MLOPS Projects
-<p align="center">
-  [![GitHub Stars](https://img.shields.io/github/stars/octocat/hello-world.svg?style=for-the-badge)](https://github.com/octocat/hello-world/stargazers)
-  [![GitHub Forks](https://img.shields.io/github/forks/octocat/hello-world.svg?style=for-the-badge)](https://github.com/octocat/hello-world/network)
-</p>
 
-<p align="center">
-    [![GitHub Contributors](https://img.shields.io/github/contributors/techiescamp/mlops)](https://github.com/techiescamp/mlops)
-    [![Last Commit](https://img.shields.io/github/last-commit/techiescamp/mlops)](https://github.com/techiescamp/mlops/commits/main)
-    [![Python Version](https://img.shields.io/badge/python-3.x-blue)](https://www.python.org/downloads/)
-    [![License](https://img.shields.io/github/license/techiescamp/mlops)](https://github.com/techiescamp/mlops/blob/main/LICENSE)
-</p>
+<div align="center">
+  <img src="https://img.shields.io/github/stars/techiescamp/mlops.svg?style=for-the-badge" alt="GitHub Stars" />
+  <img src="https://img.shields.io/github/forks/techiescamp/mlops.svg?style=for-the-badge" alt="GitHub Forks" />
+  <img src="https://img.shields.io/github/contributors/techiescamp/mlops.svg?style=for-the-badge" alt="Contributors" />
+  <img src="https://img.shields.io/github/last-commit/techiescamp/mlops.svg?style=for-the-badge" alt="Last Commit" />
+  <img src="https://img.shields.io/badge/python-3.x-blue?style=for-the-badge" alt="Python Version" />
+  <img src="https://img.shields.io/github/license/techiescamp/mlops.svg?style=for-the-badge" alt="License" />
+</div>
 
 ## Overview
 
