@@ -97,7 +97,7 @@ def augmentation(retriever, memory):
     prompt_template = ChatPromptTemplate.from_template(
         """
         You are a helpful AI assistant. Use the following context and chat history to answer the question. 
-        If you don't know the answer, respond that it is out of context and suggest querying technical experts.
+        If the answer is NOT available in the context, clearly mention that it is "out of context" and prefix your answer with a warning symbol (⚠️). 
 
         chat history: {chat_history}
 
@@ -139,6 +139,7 @@ app.add_middleware(
 # pydantic variables for RAG
 class QueryRequest(BaseModel):
     query: str
+
 
 # Global variables for RAG
 embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')

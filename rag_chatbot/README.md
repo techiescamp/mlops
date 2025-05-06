@@ -180,15 +180,9 @@ The query and answer are saved to memory for future context.
 
 ### Return Response to Client
     The FastAPI app sends the JSON response back to the client.
-
+    
 ### Contributing
-We welcome contributions! To get started:
-
-1. Fork the repository.
-2. Create a feature branch (git checkout -b feature/your-feature).
-3. Commit your changes (git commit -m "Add your feature").
-4. Push to the branch (git push origin feature/your-feature).
-5. Open a pull request.
+We welcome contributions from the security community. Please read our Contributing Guidelines before submitting pull requests.
 
 ### License
 This project is licensed under the MIT License. See the  file for details

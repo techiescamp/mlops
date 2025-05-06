@@ -2,6 +2,7 @@ import mlflow
 import mlflow.sklearn
 from mlflow.models import infer_signature
 
+
 import pandas as pd
 import pickle
 from utils import load_emp_attr_data
