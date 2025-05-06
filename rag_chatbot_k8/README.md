@@ -9,6 +9,14 @@ The project focuses on improving user interaction with Kubernetes resources, mak
 
 This initiative seeks to empower users by providing a more intuitive and effective way to engage with Kubernetes documentation, supporting both learning and practical implementation.
 
+## Why Use This Chatbot?
+----------------------------------
+- **Accurate Answers:** Retrieves and generates responses based on your project’s documentation.
+- **Context-Aware:** Maintains conversation history for coherent interactions.
+- **Efficient:** Uses vector search (FAISS) for fast document retrieval.
+- **Cost-Conscious:** Tracks token usage and estimates costs for Azure OpenAI API calls.
+- **Customizable:** Easily adapt the pipeline to other document formats or LLMs.
+
 
 ## Github Actions workflow steps:
 -------------------------------------------
@@ -71,7 +79,7 @@ GITHUB_REPOSITORY=<github-repo>
 
 4. Place your Markdown documentation in the `k8_docs/en/` directory
 
-### Running the Application
+## Running the Application
 
 1. Start the FastAPI server
 
@@ -88,14 +96,15 @@ uvicorn main:app --reload
 2. Access the API at http://localhost:8000.
 3. Use a frontend (e.g., a React app) or tools like Postman to send queries to POST /query
 
-### Example Query
+## Example Query
 ```json
 {
   "query": "Explain service traffic policy in k8"
 }
 ```
 
-### Example Response
+## Example Response
+  The FastAPI server sends the JSON response to the client.
 
 ```json
 {
@@ -109,9 +118,10 @@ uvicorn main:app --reload
   "output_tokens": 78,
   "estimated_cost": 0.0048
 }
+
 ```
 
-### For Frontend Setup
+## Frontend Setup
 
 - If you are in different folder => `rag_chatbot_k8/frontend/` 
 - If you are in same folder => `frontend/`
@@ -135,7 +145,7 @@ npm run build (for production environment)
 ```
 
 
-### Detailed Explanation of Workflow
+## Detailed Explanation of Workflow
 ----------------------------------------------------------------------------
 ### Client (Frontend)
 The process starts with a client (e.g., a React app at http://localhost:3000) sending requests to the FastAPI backend.
@@ -185,19 +195,43 @@ The response includes:
 The query and answer are saved to memory for future context.
 
 
-### Why Use This Chatbot?
-----------------------------------
-- **Accurate Answers:** Retrieves and generates responses based on your project’s documentation.
-- **Context-Aware:** Maintains conversation history for coherent interactions.
-- **Efficient:** Uses vector search (FAISS) for fast document retrieval.
-- **Cost-Conscious:** Tracks token usage and estimates costs for Azure OpenAI API calls.
-- **Customizable:** Easily adapt the pipeline to other document formats or LLMs.
+## RAG Performance Metrics
+-------------------------------------------------------------------------
+### A. Retrieval Metrics: 
+Measures how well the retriever fetches relevant documents.
 
-### Return Response to Client
-    The FastAPI app sends the JSON response back to the client.
+1. Recall@k: Proportion of relevant documents retrieved in the top-k.
+
+2. Precision@k: Proportion of top-k documents that are relevant.
+
+3. MRR (Mean Reciprocal Rank): Average of reciprocal ranks of the first relevant result.
+
+### B. Generation Metrics:
+Measures how well the LLM generate response using relvant docuemnts.
+
+1. **Semantic Similarity:** Cosine similarity between the generated answer and the retrieved context, assessing grounding.
+
+2. **Out-of-Context:** Checks for the 🌟 emoji to detect retriever failures.
+
+
+### Implementation steps of metrics:
+Metrics ae implemented in `runtime_evaluator.py` and `utils.py`. 
+
+**`runtime_evaluator.py` file:**
+
+- `_get_relevant_sources:` Uses a list comprehension to filter documents with similarity above similarity_threshold.
+- `_get_query_doc_similarity:` Computes average similarity with a single loop.
+- `_get_document_diversity:` Simplifies pairwise similarity calculation using a list comprehension.
+- `evaluate_retrieval` and `evaluate_generation:` Combine metrics clearly without redundant computations.
+
+**`utils.py` file:** 
+- All similarity calculations use compute_semantic_similarity and compute_text_overlap.
+
 
 ### Contributing
+-----------------------------------------------------
 We welcome contributions from the security community. Please read our Contributing Guidelines before submitting pull requests.
 
 ### License
+----------------------------------------------------
 This project is licensed under the MIT License. See the  file for details

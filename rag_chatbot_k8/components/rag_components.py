@@ -8,7 +8,7 @@ from .utils import clean_markdown
 
 class RAGComponents:
     @staticmethod
-    def retrieve_documents(vector_store, k=4):
+    def retrieve_documents(vector_store, k):
         """ Create a retriever from the vector store. """
         return vector_store.as_retriever(search_kwargs={'k': k})
     
@@ -29,9 +29,8 @@ class RAGComponents:
         """ Create the RAG augmentation chain. """
         prompt_template = ChatPromptTemplate.from_template(
             """
-            You are a helpful AI assistant that explain concepts to beginner. Use the following context and chat history to answer the question. Avoid spelling mistakes.
-            If the context provided does NOT help answer the question, clearly mention that it's "out of context" and prefix your answer with a emoji symbol of your choice.
-
+            You are a helpful AI assistant that explains concepts to beginners. Use the provided context and chat history to answer the question. Avoid spelling mistakes.
+            If the context does NOT help answer the question, clearly mention that it's "out of context" and prefix your answer with a 🌟 emoji.
             Chat History: {chat_history}
             Context: {context}
             Question: {question}

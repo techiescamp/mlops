@@ -31,10 +31,9 @@ class DocumentLoader:
         md_files = self.load_md_files()
         filename_embeddings = []
         for doc in md_files:
-            print('doc: ', doc)
             embeddings = self.embedding_model.embed_query(doc['filename'])
             filename_embeddings.append(embeddings)
-        print('filename-embeddings: ', filename_embeddings)
+        print(f"Precomputed {len(filename_embeddings)} filename embeddings....")
         with open(self.filename_embeddings_path, 'wb') as f:
             pickle.dump({
                 'files': md_files,
@@ -58,8 +57,6 @@ class DocumentLoader:
         filename_embeddings_array = np.array(filename_embeddings)
 
         similarities = cosine_similarity(query_embedding_array, filename_embeddings_array)[0]
-        print('similarities: ', similarities)
         top_indices = similarities.argsort()[-top_k:][::-1]
-        print('top-indices: ', top_indices)
         selected_files = [md_files[idx] for idx in top_indices]
         return selected_files

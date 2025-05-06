@@ -10,6 +10,7 @@ from components.text_splitter import TextSplitter
 from components.vector_store import VectorStoreManager
 from components.rag_components import RAGComponents
 from components.utils import estimate_cost, clean_markdown
+from components.runtime_evaluator import RuntimeEvaluator
 
 # load env variables
 load_dotenv()
@@ -48,6 +49,8 @@ vector_store_manager = VectorStoreManager(
     embedding_model=embedding_model,
     batch_size=100
 )
+# testing
+runtime_evaluator = RuntimeEvaluator(embedding_model=embedding_model)
 
 # fastapi app
 app = FastAPI()
@@ -63,15 +66,18 @@ app.add_middleware(
 
 class QueryRequest(BaseModel):
     query: str
+    isEvaluate: bool = True # whether to compute runtime evaluation metrics
 
 @app.post("/query")
 async def query_rag(request: QueryRequest):
     print('query: ', request.query)
     try:
         query = request.query
+        # testing
+        isEvaluate = request.isEvaluate
         
         # select relevant documents
-        selected_files = document_loader.select_relevant_files(query, top_k=5)
+        selected_files = document_loader.select_relevant_files(query, top_k=10)
 
         # split documents into chunks
         documents = text_splitter.split_documents(selected_files)
@@ -80,7 +86,7 @@ async def query_rag(request: QueryRequest):
         vector_store = vector_store_manager.load_vector_store(documents) 
 
         # rag components
-        retriever = RAGComponents.retrieve_documents(vector_store)
+        retriever = RAGComponents.retrieve_documents(vector_store, k=15)
         memory = RAGComponents.create_memory()
         augmentation_chain = RAGComponents.create_augmentation_chain(retriever, llm, memory)
 
@@ -100,12 +106,21 @@ async def query_rag(request: QueryRequest):
         # Save conversation context
         memory.save_context({"question": query}, {"answer": result})
 
+        # testing
+        evaluation = {}
+        # retrieved_docs = documetns retrieved from RAG component
+        # selected_Docs = docs selected at starting of the pipeline before RAG component
+        if isEvaluate:
+            evaluation = runtime_evaluator.evaluate(query=query, retrieved_docs=search_docs, selected_docs=documents, answer=result, context=context)
+            print("Performance Evaluation: \n", evaluation)
+
         return {
             "answer": result,
             "sources": [doc.metadata['source'] for doc in search_docs],
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
-            "estimated_cost": cost
+            "estimated_cost": cost,
+            "evaluation": evaluation if isEvaluate else None,
         }
     except Exception as e:
         print(f"Error processing query: {str(e)}")
@@ -118,3 +133,4 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+    

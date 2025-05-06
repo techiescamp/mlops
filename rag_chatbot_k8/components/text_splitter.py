@@ -3,7 +3,7 @@ from langchain.schema import Document
 
 
 class TextSplitter:
-    def __init__(self, chunk_size=1000, chunk_overlap=50):
+    def __init__(self, chunk_size=1500, chunk_overlap=50):
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
 
     def split_documents(self, md_docs):
@@ -20,4 +20,5 @@ class TextSplitter:
                     }
                 )
                 documents.append(document)
+        print(f"Total document chunks created: {len(documents)}")
         return documents
