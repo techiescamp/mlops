@@ -1,4 +1,4 @@
-## RAG powered chatbot for project documents
+## RAG powered chatbot by webscraping the Kubernetes documents
 
 **RAG** - **Retrieval Augmented Generation** is a workflow that's simplifies the use of generating content by taking one's own knowledge base as reference. In fine-tuning, we have to store large content of data in the model, which can be resource-intensive and time-consuming, RAG streamlines the process by retrieving relevant information from a knowledge base dynamically and combining it with a language model to generate accurate, context-specific responses without the need for extensive retraining.
 
@@ -38,12 +38,12 @@ To set up and run the project, follow these steps:
 - Azure OpenAI API credentials (set in a .env file)
 - Markdown files in the docs/ directory
 
-## Installation
+## Setup files
 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/rag-chatbot.git
-cd rag-chatbot
+git clone https://github.com/techiescamp/mlops.git
+cd rag_chatbot_webscrape
 ```
 
 2. Install dependencies
@@ -62,11 +62,18 @@ OPENAI_API_VERSION=<version-date-in-azure:(e.g: 2024-13-3)>
 GITHUB_REPOSITORY=<github-repo>
 ```
 
-4. Place your Markdown documentation in the `docs/` directory
-
 ### Running the Application
 
-1. Start the FastAPI server
+1. First scrape the ![kubernetes_docs](https://kubernetes.io/docs/_print/) site. For that ru the following command
+
+```
+python conversion.py
+```
+
+This command will scrape the  kubernetes_docs page and store in `docs/*` folder. This `docs/` folder is used as knowldege base for DocuMancer AI.
+
+
+2. Start the FastAPI server
 
 ```
 python app.py
@@ -132,9 +139,21 @@ npm run build (for production environment)
 ### Client (Frontend)
 The process starts with a client (e.g., a React app at http://localhost:3000) sending requests to the FastAPI backend.
 
-### FastAPI Application
-The entry point is the FastAPI app, which handles CORS middleware and main endpoint:
-`POST /query:` The core endpoint for processing user queries with the RAG pipeline.
+### FastAPI Application - (Backend)
+Before starting the main backend which is `server.py`. First we run the `conversion.py` to scrape the documents.
+
+1. `conversion.py`
+
+  - `crawl_docs()` => this is the starting point of scraping the documents. Here scraping is done by crawling the nested links provided in the docs. 
+  - `fetch_and_convert()` => will convert the html to markdown and leverage `beautifulsoup` library for scraping and parsing the html links.
+
+2. `server.py`
+
+  This file handles CORS middleware and main endpoints:
+    `POST /query:` The core endpoint for processing user queries with the RAG pipeline.
+
+    `GET /health`: Checks the status of the `server.py` - backend
+
 
 ### Query Processing (POST /query)
 The client sends a JSON payload (e.g., {"query": "What is memoization?"}) to /query.
@@ -182,7 +201,7 @@ The query and answer are saved to memory for future context.
     The FastAPI app sends the JSON response back to the client.
 
 ### Contributing
-We welcome contributions from the security community. Please read our Contributing Guidelines before submitting pull requests.
+We welcome contributions from the security community. Please read our ![Contributing Guidelines](../CONTRIBUTION.md) before submitting pull requests.
 
 ### License
-This project is licensed under the MIT License. See the  file for details
+This project is licensed under the ![MIT License](../LICENCE). See the  file for details

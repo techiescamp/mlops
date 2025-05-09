@@ -182,7 +182,7 @@ The query and answer are saved to memory for future context.
     The FastAPI app sends the JSON response back to the client.
     
 ### Contributing
-We welcome contributions from the security community. Please read our Contributing Guidelines before submitting pull requests.
+We welcome contributions from the security community. Please read our ![Contributing Guidelines](../CONTRIBUTION.md) before submitting pull requests.
 
 ### License
-This project is licensed under the MIT License. See the  file for details
+This project is licensed under the ![MIT License](../LICENCE). See the  file for details

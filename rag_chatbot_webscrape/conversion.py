@@ -10,7 +10,7 @@ base_url = "https://kubernetes.io/docs/_print/"
 docs_base = "https://kubernetes.io/docs"
 
 # directory to save markdown files
-output_dir = "kubernetes_docs"
+output_dir = "docs"
 os.makedirs(output_dir, exist_ok=True)
 
 # initialize html2text converter
@@ -19,7 +19,7 @@ h2t.body_width = 0 # disable line wrapping
 h2t.ignore_links = False # keep links
 h2t.ignore_images = True # ignore images
 
-# set to keep track of visited urls
+# unique set to keep track of visited urls
 visited_urls = set()
 
 def sanitize_url(url):

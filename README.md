@@ -88,10 +88,10 @@ The Retrieval-Augmented Generation (RAG) workflow enhances efficiency by dynamic
 
 
 ## Contribution
-We welcome contributions from the security community. Please read our [Contributing Guidelines](contribution.md) before submitting pull requests.
+We welcome contributions from the security community. Please read our [Contributing Guidelines](./CONTRIBUTION.md) before submitting pull requests.
 
 
 ## License
 
-This project is open-source and available under the MIT License.
+This project is open-source and available under the ![MIT License](./LICENCE).
 [&copy;2025 www.techiescamp.com/](www.techiescamp.com/)

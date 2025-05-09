@@ -1,4 +1,7 @@
-## RAG powered chatbot for project documents
+## RAG powered chatbot using kubernetes docs
+
+Note - The kubernetes docs can be found ![here](https://github.com/kubernetes/website/tree/main/content/en/docs). Copy the 'en' version of documents and save it in your project folder to use this DocuMancer AI locally.
+
 
 **RAG** - **Retrieval Augmented Generation** is a workflow that's simplifies the use of generating content by taking one's own knowledge base as reference. In fine-tuning, we have to store large content of data in the model, which can be resource-intensive and time-consuming, RAG streamlines the process by retrieving relevant information from a knowledge base dynamically and combining it with a language model to generate accurate, context-specific responses without the need for extensive retraining.
 
@@ -25,7 +28,7 @@ When forking the project follow the below actions:
 Backend: 
 - python version - 3.13.3
 - Install dependencies - `pip install -r requirements.txt`
-- Run backend code - `pyton app.py` or `uvicorn main:app --reload`
+- Run backend code - `python app.py` or `uvicorn main:app --reload`
 
 Frontend:
 - node version - 22.14.0
@@ -230,8 +233,8 @@ Metrics ae implemented in `runtime_evaluator.py` and `utils.py`.
 
 ### Contributing
 -----------------------------------------------------
-We welcome contributions from the security community. Please read our Contributing Guidelines before submitting pull requests.
+We welcome contributions from the security community. Please read our ![Contributing Guidelines](../CONTRIBUTION.md) before submitting pull requests.
 
 ### License
 ----------------------------------------------------
-This project is licensed under the MIT License. See the  file for details
+This project is licensed under the ![MIT License](../LICENCE). See the  file for details
