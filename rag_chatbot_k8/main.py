@@ -3,8 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
 from components.document_loader import DocumentLoader
 from components.text_splitter import TextSplitter
 from components.vector_store import VectorStoreManager
@@ -19,17 +18,24 @@ AZURE_API_KEY = os.getenv("AZURE_API_KEY")
 AZURE_CHAT_DEPLOYMENT = os.getenv("AZURE_CHAT_DEPLOYMENT")
 AZURE_EMBEDDING_DEPLOYMENT = os.getenv("AZURE_EMBEDDING_DEPLOYMENT")
 AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION")
+AZURE_EMBEDDING_VERSION = os.getenv("AZURE_EMBEDDING_VERSION")
 
 INPUT_COST = 0.00015 / 1000
 OUTPUT_COST = 0.0006 / 1000
 
 # Azure AI configuration
-embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
 llm = AzureChatOpenAI(
     azure_endpoint=AZURE_ENDPOINT,
     azure_deployment=AZURE_CHAT_DEPLOYMENT,
     api_key=AZURE_API_KEY,
     openai_api_version=AZURE_OPENAI_API_VERSION    
+)
+
+embedding_model = AzureOpenAIEmbeddings(
+    azure_endpoint=AZURE_ENDPOINT,
+    deployment=AZURE_EMBEDDING_DEPLOYMENT,
+    api_key=AZURE_API_KEY,
+    openai_api_version=AZURE_EMBEDDING_VERSION
 )
 
 # initialize components

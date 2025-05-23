@@ -45,8 +45,8 @@ class VectorStoreManager():
             for i in range(0, len(documents), self.batch_size):
                 batch = documents[i : i+self.batch_size]
                 if vector_store is None:
-                    vector_store = FAISS.from_documents(documents, self.embedding_model)
-                    print(f"FAISS DB created with {len(documents)} documents")
+                    vector_store = FAISS.from_documents(batch, self.embedding_model)
+                    print(f"FAISS DB created with {len(batch)} documents")
                 else:
                     vector_store.add_documents(batch)
                     print(f"Added {len(batch)} documents to FAISS DB")
