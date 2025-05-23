@@ -13,7 +13,7 @@ function App() {
         </h1>
         <div className='header-details'>
           <p><b>Model:</b> gpt-4o-mini</p>
-          <p><b>Embeddings:</b> sentence-transformer/all-mini-LM</p>
+          <p><b>Embeddings:</b> text-embedding-3-small</p>
           <p><b>Vector store:</b> FAISS</p>
         </div>
         <p className='copyright'>Powered by <span>&copy; techiescamp 2025</span></p>
