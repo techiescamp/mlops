@@ -1,8 +1,5 @@
-langchain
 langchain-openai
-langchain-community
 langchain-huggingface
-langchain-core
 faiss-cpu
 markdown
 tiktoken

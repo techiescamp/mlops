@@ -1,5 +1,5 @@
 # emp_attr_model/requirements.txt
-kserve==0.11.0  # Match your KServe version
+kserve==0.10.0  # Match your KServe version
 pandas==2.1.0
 numpy==1.26.0
 scikit-learn==1.5.1

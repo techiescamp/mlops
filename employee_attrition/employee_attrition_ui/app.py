@@ -9,7 +9,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-KSERVE_ENDPOINT = "http://52.151.18.124:30080/v1/models/employee-attrition:predict"
+KSERVE_ENDPOINT = os.getenv("BACKEND_API_URL")
 
 # home page
 @app.route("/")

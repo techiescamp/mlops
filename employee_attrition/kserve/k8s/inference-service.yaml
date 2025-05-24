@@ -1,0 +1,17 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: employee-attrition
+  namespace: ml
+spec:
+  predictor:
+    containers:
+      - name: predictor
+        image: techiescamp/employee-attrition-predictor:1.0.0
+        resources:
+          requests:
+            cpu: "125m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

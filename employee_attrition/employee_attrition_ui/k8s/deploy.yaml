@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee-attrition-ui
+  namespace: ml
+  labels:
+    app: employee-attrition-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: employee-attrition-ui
+  template:
+    metadata:
+      labels:
+        app: employee-attrition-ui
+    spec:
+      containers:
+      - name: attrition-ui
+        image: techiescamp/employee-attrition-ui:1.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          name: http
+        env:
+        - name: BACKEND_API_URL
+          value: "http://employee-attrition-predictor.ml/v1/models/employee-attrition:predict"
+        resources:
+          requests:
+            cpu: "125m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: employee-attrition-ui
+  namespace: ml
+spec:
+  selector:
+    app: employee-attrition-ui
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 30500
+  type: NodePort
