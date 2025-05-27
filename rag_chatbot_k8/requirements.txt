@@ -1,8 +1,10 @@
-langchain-openai
-langchain-huggingface
 faiss-cpu
 markdown
 tiktoken
 fastapi
 pydantic
 uvicorn
+langchain
+langchain-community
+langchain-openai
+langchain-core

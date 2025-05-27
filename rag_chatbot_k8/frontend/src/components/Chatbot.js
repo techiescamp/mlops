@@ -1,14 +1,11 @@
-import axios from 'axios'
 import { React, useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import TokenComponent from './TokenComponent'
 import './chatbot.css'
-import { config } from '../config'
 import axiosCustomApi from '../axiosLib'
 
-const base_url = config.base_url
 
 const Chatbot = () => {
     const [loading, setLoading] = useState(false)
