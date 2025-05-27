@@ -8,9 +8,10 @@ const PORT = 3000
 // serve static file
 app.use(express.static(path.join(__dirname, 'build'))) // ../frontend/build
 
+console.log('process.env.REACT_APP_API_URL', process.env.REACT_APP_API_URL)
 // proxy /api to your backend
 app.use('/api', createProxyMiddleware({
-    target: process.env.REACT_APP_API_URL,
+	target: process.env.REACT_APP_API_URL || 'http://localhost:8000',
     changeOrigin: true
 }))
 

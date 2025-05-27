@@ -4,6 +4,7 @@ tiktoken
 fastapi
 pydantic
 uvicorn
+scikit-learn
 langchain
 langchain-community
 langchain-openai
