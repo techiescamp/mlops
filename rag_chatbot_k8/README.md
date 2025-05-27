@@ -238,3 +238,8 @@ We welcome contributions from the security community. Please read our ![Contribu
 ### License
 ----------------------------------------------------
 This project is licensed under the ![MIT License](../LICENCE). See the  file for details
+
+
+langchain_core
+langchain_community
+langchain

@@ -4,7 +4,6 @@ import pickle
 import numpy as np
 
 from sklearn.metrics.pairwise import cosine_similarity
-from langchain_huggingface import HuggingFaceEmbeddings
 
 class DocumentLoader:
     def __init__(self, docs_folder, filename_embeddings_path, embedding_model):
