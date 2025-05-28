@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-env
+data:
+  AZURE_ENDPOINT: "<open-ai-endpoint>"
+  AZURE_CHAT_DEPLOYMENT: "gpt-4o-mini"
+  OPENAI_API_VERSION: "2024-05-01-preview"
+  AZURE_EMBEDDING_DEPLOYMENT: "text-embedding-3-small"
+  AZURE_EMBEDDING_VERSION: "2024-12-01-preview"

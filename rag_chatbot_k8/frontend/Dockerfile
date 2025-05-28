@@ -2,6 +2,8 @@ FROM node:22-slim
 
 WORKDIR /app
 
+ENV REACT_APP_PROXY=/api
+
 # Copy package files first for better caching
 COPY package*.json ./
 
