@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-frontend-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: rag-frontend
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: 3000
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
+  type: {{ .Values.service.type }}

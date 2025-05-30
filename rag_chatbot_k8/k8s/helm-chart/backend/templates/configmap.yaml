@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: rag-configmap
+    namespace: {{ .Release.Namespace }}
+data:
+    AZURE_ENDPOINT: {{ .Values.config.azureEndpoint | quote }}
+    AZURE_CHAT_DEPLOYMENT: {{ .Values.config.azureChatDeployment | quote }}
+    OPENAI_API_VERSION: {{ .Values.config.openaiApiVersion | quote }}
+    AZURE_EMBEDDING_DEPLOYMENT: {{ .Values.config.azureEmbeddingDeployment | quote }}
+    AZURE_EMBEDDING_VERSION: {{ .Values.config.azureEmbeddingVersion | quote }}

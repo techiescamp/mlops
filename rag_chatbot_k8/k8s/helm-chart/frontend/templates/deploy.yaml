@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-{{ .Release.Name }}-deployment
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: rag-frontend
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: rag-frontend
+  template:
+    metadata:
+      labels:
+        app: rag-frontend
+    spec:
+      containers:
+      - name: rag-ui
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: REACT_APP_API_URL
+          value: "{{ .Values.backend_url }}"
