@@ -1,8 +1,7 @@
-import { React, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import TokenComponent from './TokenComponent'
 import './chatbot.css'
 import axiosCustomApi from '../axiosLib'
 
@@ -37,16 +36,13 @@ const Chatbot = () => {
 
         try {
             const res = await axiosCustomApi.post('/query', { query: inputText })
-            const { answer, sources, input_tokens, output_tokens, estimated_cost } = res.data
+            const { answer, sources } = res.data
             setInputText('')
             // add bot message to messages
             const botMessage = {
                 role: 'bot',
                 content: answer,
-                sources,
-                input_tokens,
-                output_tokens,
-                estimated_cost
+                sources
             }
             setMessages(prev => [...prev, botMessage])
         } catch(err) {
@@ -115,11 +111,6 @@ const Chatbot = () => {
                                 <div className='message-details'>
                                     <button onClick={handleDetails}>Details</button>
                                     <div className={showDetails ? 'active' : 'not-active'}>
-                                        <div className='tokens'>
-                                            <TokenComponent name="Input Tokens" count={msg.input_tokens}  />
-                                            <TokenComponent name="Output Tokens" count={msg.output_tokens} />
-                                            <TokenComponent name="Estimated cost" count={msg.estimated_cost} />
-                                        </div>
                                         <ul className='sources'>
                                             <p><strong>Sources: </strong></p>
                                             {msg.sources.map((source, i) => (

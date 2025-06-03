@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-backend
+  template:
+    metadata:
+      labels:
+        app: rag-backend
+    spec:
+      containers:
+        - name: backend
+          image: techiescamp/rag-backend:1.0.0
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: backend-env
+          env:
+            - name: AZURE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secret
+                  key: AZURE_API_KEY

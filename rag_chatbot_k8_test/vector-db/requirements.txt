@@ -1,8 +1,0 @@
-langchain_community
-langchain-openai
-langchain
-fastapi
-pydantic
-uvicorn
-faiss-cpu
-pickle

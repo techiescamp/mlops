@@ -1,1 +1,4 @@
 .env
+venv
+hash_files.json
+__pycache__
