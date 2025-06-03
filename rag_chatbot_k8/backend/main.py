@@ -1,7 +1,7 @@
 import os
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+import requests
 from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
 from components.document_loader import DocumentLoader
@@ -76,66 +76,63 @@ class QueryRequest(BaseModel):
 
 @app.post("/query")
 async def query_rag(request: QueryRequest):
-    print('query: ', request.query)
+    print('🧑🏻‍🦱 query: ', request.query)
     try:
         query = request.query
         # testing
-        is_need_evaluation = request.isEvaluate
+        # is_need_evaluation = request.isEvaluate
         
-        # select relevant documents
-        selected_files = document_loader.select_relevant_files(query, top_k=10)
-
-        # split documents into chunks
-        documents = text_splitter.split_documents(selected_files)
-
-        #lod or update vector store
-        vector_store = vector_store_manager.load_vector_store(documents) 
+        # vector_store = vector_store_manager.load_vector_store(documents) 
+        vector_store = requests.post(f"http://localhost:8001/search", json={"query": query})
+        print("vector-db: ", vector_store)
 
         # rag components
-        retriever = RAGComponents.retrieve_documents(vector_store, k=15)
-        memory = RAGComponents.create_memory()
-        augmentation_chain = RAGComponents.create_augmentation_chain(retriever, llm, memory)
+    #     retriever = RAGComponents.retrieve_documents(vector_store, k=15)
+    #     memory = RAGComponents.create_memory()
+    #     augmentation_chain = RAGComponents.create_augmentation_chain(retriever, llm, memory)
 
-        # retrieve documnets and create context
-        search_docs = retriever.invoke(query)
-        context = "\n\n".join(clean_markdown(doc.page_content) for doc in search_docs)
+    #     # retrieve documnets and create context
+    #     search_docs = retriever.invoke(query)
+    #     context = "\n\n".join(clean_markdown(doc.page_content) for doc in search_docs)
 
-        # prepare input text for cost estimation
-        input_text = f"Chat History: {memory.load_memory_variables({})['chat_history']}\nContext: {context}\nQuestion: {query}"
+    #     # prepare input text for cost estimation
+    #     input_text = f"Chat History: {memory.load_memory_variables({})['chat_history']}\nContext: {context}\nQuestion: {query}"
 
-        # invoke augmentation chain
-        result = augmentation_chain.invoke(query)
+    #     # invoke augmentation chain
+    #     result = augmentation_chain.invoke(query)
 
-        # estimate cost
-        input_tokens, output_tokens, cost = estimate_cost(input_text, result, AZURE_CHAT_DEPLOYMENT, input_cost=INPUT_COST, output_cost=OUTPUT_COST)
+    #     # estimate cost
+    #     input_tokens, output_tokens, cost = estimate_cost(input_text, result, AZURE_CHAT_DEPLOYMENT, input_cost=INPUT_COST, output_cost=OUTPUT_COST)
 
-        # Save conversation context
-        memory.save_context({"question": query}, {"answer": result})
+    #     # Save conversation context
+    #     memory.save_context({"question": query}, {"answer": result})
 
-        # testing
-        evaluation = {}
-        # retrieved_docs = documetns retrieved from RAG component
-        # selected_Docs = docs selected at starting of the pipeline before RAG component
-        if is_need_evaluation:
-            evaluation = runtime_evaluator.evaluate(query=query, retrieved_docs=search_docs, selected_docs=documents, answer=result, context=context)
-            print("Performance Evaluation: \n", evaluation)
+    #     # testing
+    #     evaluation = {}
+    #     # retrieved_docs = documetns retrieved from RAG component
+    #     # selected_Docs = docs selected at starting of the pipeline before RAG component
+    #     if is_need_evaluation:
+    #         evaluation = runtime_evaluator.evaluate(query=query, retrieved_docs=search_docs, selected_docs=documents, answer=result, context=context)
+    #         print("Performance Evaluation: \n", evaluation)
 
-        return {
-            "answer": result,
-            "sources": [doc.metadata['source'] for doc in search_docs],
-            "input_tokens": input_tokens,
-            "output_tokens": output_tokens,
-            "estimated_cost": cost,
-            "evaluation": evaluation if is_need_evaluation else None,
-        }
+    #     return {
+    #         "answer": result,
+    #         "sources": [doc.metadata['source'] for doc in search_docs],
+    #         "input_tokens": input_tokens,
+    #         "output_tokens": output_tokens,
+    #         "estimated_cost": cost,
+    #         "evaluation": evaluation if is_need_evaluation else None,
+    #     }
     except Exception as e:
         print(f"Error processing query: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="localhost", port=8000)

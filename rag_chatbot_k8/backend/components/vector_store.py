@@ -3,7 +3,7 @@ from langchain_community.vectorstores import FAISS
 
 
 class VectorStoreManager():
-    def __init__(self, vector_store_path, embedding_model, batch_size=100):
+    def __init__(self, vector_store_path, embedding_model, batch_size=200):
         self.vector_store_path = vector_store_path
         self.embedding_model = embedding_model
         self.batch_size = batch_size

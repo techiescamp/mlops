@@ -9,6 +9,7 @@ class TextSplitter:
     def split_documents(self, md_docs):
         """Split markdown documents into chunks."""
         print('Splitting documents into chunks...')
+
         documents = []
         for doc in md_docs:
             split_texts = self.text_splitter.split_text(doc['content'])
@@ -22,3 +23,4 @@ class TextSplitter:
                 documents.append(document)
         print(f"Total document chunks created: {len(documents)}")
         return documents
+    
