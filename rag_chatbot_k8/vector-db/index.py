@@ -9,6 +9,7 @@ from typing import List, Any
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings
 from langchain.docstore import InMemoryDocstore
+from langchain.schema import Document
 import faiss
 from dotenv import load_dotenv
 
@@ -30,6 +31,9 @@ app.add_middleware(
 # Vector DB path
 VECTOR_DB_PATH = "vector_store/index.faiss"
 DOCS_STORE_PATH = "vector_store/docs.pkl"
+
+# Create vector store directory if it doesn't exist
+os.makedirs(os.path.dirname(VECTOR_DB_PATH), exist_ok=True)
 
 # Azure embedding model
 embedding_model = AzureOpenAIEmbeddings(
@@ -68,15 +72,17 @@ async def store_embeddings(data: List[EmbeddingItem]):
     try:
         docs = [
             Document(
-                page_content = item.page_content,
-                metadata = item.metadata
+                page_content=item.content,
+                metadata=item.metadata
             )
             for item in data
         ]
-        embeddings = [item.embeddings for item in docs]
 
         # add to vector db
-        vector_store.add_embeddings(texts=docs, embeddings=embeddings)
+        vector_store.add_texts(
+            texts=[doc.page_content for doc in docs],
+            metadatas=[doc.metadata for doc in docs]
+        )
 
         # Persist store
         faiss.write_index(vector_store.index, VECTOR_DB_PATH)
