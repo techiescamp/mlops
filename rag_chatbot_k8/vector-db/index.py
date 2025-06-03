@@ -1,14 +1,12 @@
-import pickle
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
-import numpy as np
 import os
-from typing import List, Any
+from typing import List
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings
-from langchain.docstore import InMemoryDocstore
+from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain.schema import Document
 import faiss
 from dotenv import load_dotenv
@@ -16,7 +14,15 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# Constants
+VECTOR_STORE_PATH = "vector_store"
+INDEX_NAME = "index"
+EMBEDDING_DIM = 1536  # for Azure text-embedding-ada-002, adjust if needed
+PORT = int(os.getenv("PORT", 8001))
+HOST = os.getenv("HOST")
 
+
+# Fast API Setup
 app = FastAPI()
 
 # enable cors
@@ -27,13 +33,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Vector DB path
-VECTOR_DB_PATH = "vector_store/index.faiss"
-DOCS_STORE_PATH = "vector_store/docs.pkl"
-
-# Create vector store directory if it doesn't exist
-os.makedirs(os.path.dirname(VECTOR_DB_PATH), exist_ok=True)
 
 # Azure embedding model
 embedding_model = AzureOpenAIEmbeddings(
@@ -50,19 +49,17 @@ class EmbeddingItem(BaseModel):
 
 class QueryRequest(BaseModel):
     query: str
-    top_k: int = 5
+    top_k: int = 10
 
 
 def load_vector_store():
-    if os.path.exists(VECTOR_DB_PATH) and os.path.exists(DOCS_STORE_PATH):
-        with open(DOCS_STORE_PATH, "rb") as f:
-            docs = pickle.load(f)
-        index = faiss.read_index(VECTOR_DB_PATH)
-        return FAISS(embedding_model, index, InMemoryDocstore(docs), {})
+    if os.path.exists(os.path.join(VECTOR_STORE_PATH, f"{INDEX_NAME}.faiss")):
+        return FAISS.load_local(VECTOR_STORE_PATH, embedding_model, index_name=INDEX_NAME, allow_dangerous_deserialization=True)
     else:
-        index = faiss.IndexFlatL2(1536) # embedding_model.embedding_dimension
+        from faiss import IndexFlatL2
+        index = IndexFlatL2(EMBEDDING_DIM)
         return FAISS(embedding_model, index, InMemoryDocstore({}), {})
-   
+
 
 vector_store = load_vector_store()
 
@@ -85,9 +82,7 @@ async def store_embeddings(data: List[EmbeddingItem]):
         )
 
         # Persist store
-        faiss.write_index(vector_store.index, VECTOR_DB_PATH)
-        with open(DOCS_STORE_PATH, "wb") as f:
-            pickle.dump(vector_store.docstore._dict, f)
+        vector_store.save_local(VECTOR_STORE_PATH, index_name=INDEX_NAME)
 
         return {"status": "success", "stored": len(data)}
     except Exception as e:
@@ -97,18 +92,28 @@ async def store_embeddings(data: List[EmbeddingItem]):
 @app.post("/search")
 async def search_query(request: QueryRequest):
     try:
-        query_embedding = embedding_model.embed_query(request.query)
-        docs_and_scores = vector_store.similarity_search_by_vector(
-            embedding=query_embedding,
+        print(request.query)
+        docs_and_scores = vector_store.similarity_search(
+            query=request.query,
             k=request.top_k
         )
-        return [
-            {
+        # print('docs-core: ', docs_and_scores) # Document schema 5 times since k= 5
+        # Document(                                 
+        #    id='5492c27c-f490-4bb5-b691-1877216adcd9', 
+        #    metadata={'source': 'configmap.md-2'}, 
+        #    page_content='Here\'s an example ConfigMap that has some keys ... like a fragment of a configuration\n')
+        # )
+        result = [{
                 "content": doc.page_content,
                 "metadata": doc.metadata
-            } for doc in docs_and_scores
+            } 
+            for doc in docs_and_scores
         ]
+        print("Sent result to query-backend")
+        return result
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -118,5 +123,5 @@ async def health_check():
     return {"status": "healthy"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8001)
+    uvicorn.run(app, host=HOST, port=PORT)
 

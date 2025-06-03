@@ -95,3 +95,8 @@ We welcome contributions from the security community. Please read our [Contribut
 
 This project is open-source and available under the ![MIT License](./LICENCE).
 [&copy;2025 www.techiescamp.com/](www.techiescamp.com/)
+git checkout -b techiescamp-develop main
+git pull https://github.com/techiescamp/mlops.git develop
+
+
+git checkout main

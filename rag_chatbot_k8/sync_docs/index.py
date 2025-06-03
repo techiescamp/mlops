@@ -1,14 +1,13 @@
 import subprocess
 import shutil
 from pathlib import Path
-import pickle
 import os
 import requests
 import glob
 import time
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -24,6 +23,19 @@ HASH_DB_PATH = Path("hash_files.json")
 # Load environment variables
 load_dotenv()
 
+# Constants
+REPO_URL = os.getenv("K8_URL")
+TEMP_DIR = Path(os.path.abspath("./temp-docs"))
+TARGET_DIR = Path(os.path.abspath("./k8_docs/en"))
+VECTOR_DB_URL = os.getenv("VECTOR_DB_URL")
+
+# Batch configuration
+EMBEDDING_BATCH_SIZE = 50  # Reduced batch size for embeddings
+STORE_BATCH_SIZE = 50     # Batch size for vector store uploads
+BATCH_DELAY = 2          # Delay between batches in seconds
+RATE_LIMIT_DELAY = 60    # Delay when hitting rate limits in seconds
+
+
 # Configure retry strategy
 retry_strategy = Retry(
     total=5,  # number of retries
@@ -35,25 +47,7 @@ session = requests.Session()
 session.mount("http://", http_adapter)
 session.mount("https://", http_adapter)
 
-# Azure embedding model
-embedding_model = AzureOpenAIEmbeddings(
-    azure_endpoint=os.getenv("AZURE_ENDPOINT"),
-    deployment=os.getenv("AZURE_EMBEDDING_DEPLOYMENT"),
-    api_key=os.getenv("AZURE_API_KEY"),
-    openai_api_version=os.getenv("AZURE_EMBEDDING_VERSION")
-)
 
-# Constants
-REPO_URL = "https://github.com/kubernetes/website"
-TEMP_DIR = Path(os.path.abspath("./temp-docs"))
-TARGET_DIR = Path(os.path.abspath("./k8_docs/en"))
-FILENAME_EMBEDDINGS_PATH = Path("filename_embeddings.pkl")
-
-# Batch configuration
-EMBEDDING_BATCH_SIZE = 50  # Reduced batch size for embeddings
-STORE_BATCH_SIZE = 50     # Batch size for vector store uploads
-BATCH_DELAY = 2          # Delay between batches in seconds
-RATE_LIMIT_DELAY = 60    # Delay when hitting rate limits in seconds
 
 app = FastAPI()
 
@@ -65,6 +59,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Azure embedding model
+embedding_model = AzureOpenAIEmbeddings(
+    azure_endpoint=os.getenv("AZURE_ENDPOINT"),
+    deployment=os.getenv("AZURE_EMBEDDING_DEPLOYMENT"),
+    api_key=os.getenv("AZURE_API_KEY"),
+    openai_api_version=os.getenv("AZURE_EMBEDDING_VERSION")
+)
+
 
 
 def clone_or_pull_repo():
@@ -124,6 +127,7 @@ def load_md_files():
     print(f"Loaded {len(md_files)} markdown files....")
     return md_files
         
+
 def call_text_splitter(md_docs):
     print("Splitting documents into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=50)
@@ -169,6 +173,7 @@ def save_hashes(hashes):
     with open(HASH_DB_PATH, "w") as f:
         json.dump(hashes, f, indent=2)
 
+
 def process_and_store_batch(batch_documents):
     """Process a batch of documents and store their embeddings."""
     contents = []
@@ -205,10 +210,11 @@ def process_and_store_batch(batch_documents):
             time.sleep(RATE_LIMIT_DELAY)
         return []
 
+
 def store_embeddings_batch(payload_batch):
     """Store a batch of embeddings in the vector store."""
     try:
-        response = session.post("http://localhost:8001/store", json=payload_batch)
+        response = session.post(f"{VECTOR_DB_URL}/store", json=payload_batch)
         response.raise_for_status()
         return True
     except Exception as e:
@@ -217,6 +223,7 @@ def store_embeddings_batch(payload_batch):
             print(f"Rate limit hit, waiting {RATE_LIMIT_DELAY} seconds...")
             time.sleep(RATE_LIMIT_DELAY)
         return False
+
 
 def rerun_embeddings():
     """ Recompute filename embeddings and save them. """

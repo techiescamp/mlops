@@ -62,6 +62,7 @@ def copy_docs():
         dest_file.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(file, dest_file)
 
+
 def rerun_embeddings():
     """ Recompute filename embeddings and save them. """
     print("🔁 Recomputing text embeddings for filenames...")

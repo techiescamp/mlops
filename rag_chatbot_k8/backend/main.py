@@ -2,26 +2,26 @@ import os
 import requests
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
-from components.document_loader import DocumentLoader
-from components.text_splitter import TextSplitter
-from components.vector_store import VectorStoreManager
-from components.rag_components import RAGComponents
-from components.utils import estimate_cost, clean_markdown
-from components.runtime_evaluator import RuntimeEvaluator
+from langchain_openai import AzureChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+from langchain.memory import ConversationBufferMemory
+from langchain_community.chat_message_histories import ChatMessageHistory
 
 # load env variables
 load_dotenv()
 AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
 AZURE_API_KEY = os.getenv("AZURE_API_KEY")
 AZURE_CHAT_DEPLOYMENT = os.getenv("AZURE_CHAT_DEPLOYMENT")
-AZURE_EMBEDDING_DEPLOYMENT = os.getenv("AZURE_EMBEDDING_DEPLOYMENT")
 AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION")
-AZURE_EMBEDDING_VERSION = os.getenv("AZURE_EMBEDDING_VERSION")
 
-INPUT_COST = 0.00015 / 1000
-OUTPUT_COST = 0.0006 / 1000
+VECTOR_DB_URL = os.getenv("VECTOR_DB_URL")
+HOST = os.getenv("HOST")
+PORT = int(os.getenv("PORT", 8000))
+
 
 # Azure AI configuration
 llm = AzureChatOpenAI(
@@ -30,33 +30,6 @@ llm = AzureChatOpenAI(
     api_key=AZURE_API_KEY,
     openai_api_version=AZURE_OPENAI_API_VERSION    
 )
-
-embedding_model = AzureOpenAIEmbeddings(
-    azure_endpoint=AZURE_ENDPOINT,
-    deployment=AZURE_EMBEDDING_DEPLOYMENT,
-    api_key=AZURE_API_KEY,
-    openai_api_version=AZURE_EMBEDDING_VERSION
-)
-
-# initialize components
-document_loader = DocumentLoader(
-    docs_folder="k8_docs/en",
-    filename_embeddings_path="filename_embeddings.pkl",
-    embedding_model=embedding_model
-)
-
-text_splitter = TextSplitter(
-    chunk_size=1000,
-    chunk_overlap=50
-)
-
-vector_store_manager = VectorStoreManager(
-    vector_store_path='./faiss-db',
-    embedding_model=embedding_model,
-    batch_size=100
-)
-# testing
-runtime_evaluator = RuntimeEvaluator(embedding_model=embedding_model)
 
 # fastapi app
 app = FastAPI()
@@ -70,6 +43,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# for memory intialization
+history = ChatMessageHistory()
+
+memory = ConversationBufferMemory(
+    chat_memory=history,
+    memory_key='chat_history',
+    k=5,
+    return_messages=True,
+    output_key="answer"
+)
+
 class QueryRequest(BaseModel):
     query: str
     isEvaluate: bool = True # whether to compute runtime evaluation metrics
@@ -79,50 +63,55 @@ async def query_rag(request: QueryRequest):
     print('🧑🏻‍🦱 query: ', request.query)
     try:
         query = request.query
-        # testing
-        # is_need_evaluation = request.isEvaluate
-        
-        # vector_store = vector_store_manager.load_vector_store(documents) 
-        vector_store = requests.post(f"http://localhost:8001/search", json={"query": query})
-        print("vector-db: ", vector_store)
 
-        # rag components
-    #     retriever = RAGComponents.retrieve_documents(vector_store, k=15)
-    #     memory = RAGComponents.create_memory()
-    #     augmentation_chain = RAGComponents.create_augmentation_chain(retriever, llm, memory)
+        # search the docs based on query in vector-db 
+        search_response = requests.post(f"{VECTOR_DB_URL}/search", json={"query": query})
 
-    #     # retrieve documnets and create context
-    #     search_docs = retriever.invoke(query)
-    #     context = "\n\n".join(clean_markdown(doc.page_content) for doc in search_docs)
+        if search_response.status_code != 200:
+            raise HTTPException(status_code=502, detail=f"Vector DB Error: {search_response.text}")
 
-    #     # prepare input text for cost estimation
-    #     input_text = f"Chat History: {memory.load_memory_variables({})['chat_history']}\nContext: {context}\nQuestion: {query}"
+        search_results = search_response.json()
+        print("Retrieved Docs: ", search_results)
 
-    #     # invoke augmentation chain
-    #     result = augmentation_chain.invoke(query)
+        # combine doc as context 
+        context = "\n\n".join(doc['content'] for doc in search_results)
 
-    #     # estimate cost
-    #     input_tokens, output_tokens, cost = estimate_cost(input_text, result, AZURE_CHAT_DEPLOYMENT, input_cost=INPUT_COST, output_cost=OUTPUT_COST)
+        prompt_template = ChatPromptTemplate.from_template(
+            """
+            You are a helpful AI assistant that explains concepts to beginners with examples and code. 
+            Use the provided context and chat history to answer the question. Avoid spelling mistakes.
+            If the context does NOT help answer the question, clearly mention that it's "out of context" and prefix your answer with a 🌟 emoji.
 
-    #     # Save conversation context
-    #     memory.save_context({"question": query}, {"answer": result})
+            Chat History: {chat_history}
+            Context: {context}
+            Question: {question}
+            Answer: 
+            """
+        )
 
-    #     # testing
-    #     evaluation = {}
-    #     # retrieved_docs = documetns retrieved from RAG component
-    #     # selected_Docs = docs selected at starting of the pipeline before RAG component
-    #     if is_need_evaluation:
-    #         evaluation = runtime_evaluator.evaluate(query=query, retrieved_docs=search_docs, selected_docs=documents, answer=result, context=context)
-    #         print("Performance Evaluation: \n", evaluation)
+        chain = (
+            {
+                "context": lambda x: context,
+                "question": RunnablePassthrough(),
+                "chat_history": lambda x: memory.load_memory_variables({"question": x})['chat_history'] 
+            }
+            | prompt_template
+            | llm
+            | StrOutputParser()
+        ) 
 
-    #     return {
-    #         "answer": result,
-    #         "sources": [doc.metadata['source'] for doc in search_docs],
-    #         "input_tokens": input_tokens,
-    #         "output_tokens": output_tokens,
-    #         "estimated_cost": cost,
-    #         "evaluation": evaluation if is_need_evaluation else None,
-    #     }
+        result = chain.invoke(query)
+
+        memory.save_context({"question": query}, {"answer": result})
+
+        return {
+            "answer": result,
+            "sources": [
+                doc['metadata']['source'] 
+                for doc in search_results if 'metadata' in doc and 'source' in doc['metadata']
+            ],
+        }
+
     except Exception as e:
         print(f"Error processing query: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -135,4 +124,4 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host=HOST, port=PORT)
