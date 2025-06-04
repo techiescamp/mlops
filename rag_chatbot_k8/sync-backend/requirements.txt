@@ -3,6 +3,6 @@ langchain_community
 langchain_core
 fastapi
 uvicorn
-dotenv
+python-dotenv
 scikit-learn
 requests
