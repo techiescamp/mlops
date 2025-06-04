@@ -8,7 +8,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings
 from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain.schema import Document
-import faiss
+from faiss import IndexFlatL2
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -18,8 +18,9 @@ load_dotenv()
 VECTOR_STORE_PATH = "vector_store"
 INDEX_NAME = "index"
 EMBEDDING_DIM = 1536  # for Azure text-embedding-ada-002, adjust if needed
-PORT = int(os.getenv("PORT", 8001))
-HOST = os.getenv("HOST")
+
+PORT = int(os.environ["PORT"])
+HOST = os.environ["HOST"]
 
 
 # Fast API Setup
@@ -36,10 +37,10 @@ app.add_middleware(
 
 # Azure embedding model
 embedding_model = AzureOpenAIEmbeddings(
-    azure_endpoint=os.getenv("AZURE_ENDPOINT"),
-    deployment=os.getenv("AZURE_EMBEDDING_DEPLOYMENT"),
-    api_key=os.getenv("AZURE_API_KEY"),
-    openai_api_version=os.getenv("AZURE_EMBEDDING_VERSION")
+    azure_endpoint=os.environ["AZURE_ENDPOINT"],
+    deployment=os.environ["AZURE_EMBEDDING_DEPLOYMENT"],
+    api_key=os.environ["AZURE_API_KEY"],
+    openai_api_version=os.environ["AZURE_EMBEDDING_VERSION"]
 )
 
 class EmbeddingItem(BaseModel):
@@ -56,7 +57,6 @@ def load_vector_store():
     if os.path.exists(os.path.join(VECTOR_STORE_PATH, f"{INDEX_NAME}.faiss")):
         return FAISS.load_local(VECTOR_STORE_PATH, embedding_model, index_name=INDEX_NAME, allow_dangerous_deserialization=True)
     else:
-        from faiss import IndexFlatL2
         index = IndexFlatL2(EMBEDDING_DIM)
         return FAISS(embedding_model, index, InMemoryDocstore({}), {})
 
