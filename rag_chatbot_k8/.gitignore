@@ -3,7 +3,6 @@ venv
 hash_files.json
 __pycache__
 filename_embeddings.pkl
-k8_docs/*
 temp-docs
 vector_store
 /node_modules
