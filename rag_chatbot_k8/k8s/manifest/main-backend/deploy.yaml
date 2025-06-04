@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: techiescamp/rag-backend:1.0.0
+          image: techiescamp/rag-backend:2.0.0
           ports:
             - containerPort: 8000
           envFrom:

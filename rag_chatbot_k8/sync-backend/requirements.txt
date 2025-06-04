@@ -1,12 +1,8 @@
 langchain-openai
 langchain_community
 langchain_core
-faiss-cpu
-markdown
-tiktoken
 fastapi
-pydantic
 uvicorn
-dotenv
+python-dotenv
 scikit-learn
 requests

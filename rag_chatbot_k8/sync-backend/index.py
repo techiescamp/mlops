@@ -30,8 +30,8 @@ TARGET_DIR = Path(os.path.abspath("./k8_docs/en"))
 VECTOR_DB_URL = os.getenv("VECTOR_DB_URL")
 
 # Batch configuration
-EMBEDDING_BATCH_SIZE = 50  # Reduced batch size for embeddings
-STORE_BATCH_SIZE = 50     # Batch size for vector store uploads
+EMBEDDING_BATCH_SIZE = 100  # Reduced batch size for embeddings
+STORE_BATCH_SIZE = 100     # Batch size for vector store uploads
 BATCH_DELAY = 2          # Delay between batches in seconds
 RATE_LIMIT_DELAY = 60    # Delay when hitting rate limits in seconds
 
