@@ -1,5 +1,6 @@
 import os
 import requests
+import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,15 +13,16 @@ from langchain.memory import ConversationBufferMemory
 from langchain_community.chat_message_histories import ChatMessageHistory
 
 # load env variables
-load_dotenv()
-AZURE_ENDPOINT = os.getenv("AZURE_ENDPOINT")
-AZURE_API_KEY = os.getenv("AZURE_API_KEY")
-AZURE_CHAT_DEPLOYMENT = os.getenv("AZURE_CHAT_DEPLOYMENT")
-AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION")
+# load_dotenv()
 
-VECTOR_DB_URL = os.getenv("VECTOR_DB_URL")
-HOST = os.getenv("HOST")
-PORT = int(os.getenv("PORT", 8000))
+AZURE_ENDPOINT = os.environ["AZURE_ENDPOINT"]
+AZURE_API_KEY = os.environ["AZURE_API_KEY"]
+AZURE_CHAT_DEPLOYMENT = os.environ["AZURE_CHAT_DEPLOYMENT"]
+AZURE_OPENAI_API_VERSION = os.environ["AZURE_OPENAI_API_VERSION"]
+
+VECTOR_DB_URL = os.environ["VECTOR_DB_URL"]
+HOST = os.environ["HOST"]
+PORT = int(os.environ["PORT"])
 
 
 # Azure AI configuration
@@ -123,5 +125,4 @@ async def health_check():
 
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host=HOST, port=PORT)

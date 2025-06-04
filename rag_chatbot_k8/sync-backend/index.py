@@ -20,14 +20,14 @@ import json
 
 HASH_DB_PATH = Path("hash_files.json")
 
-# Load environment variables
-load_dotenv()
+# # Load environment variables
+# load_dotenv()
+REPO_URL = os.environ["K8_URL"]
+VECTOR_DB_URL = os.environ["VECTOR_DB_URL"]
 
 # Constants
-REPO_URL = os.getenv("K8_URL")
 TEMP_DIR = Path(os.path.abspath("./temp-docs"))
 TARGET_DIR = Path(os.path.abspath("./k8_docs/en"))
-VECTOR_DB_URL = os.getenv("VECTOR_DB_URL")
 
 # Batch configuration
 EMBEDDING_BATCH_SIZE = 100  # Reduced batch size for embeddings
@@ -48,26 +48,13 @@ session.mount("http://", http_adapter)
 session.mount("https://", http_adapter)
 
 
-
-app = FastAPI()
-
-# enable cors
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # Azure embedding model
 embedding_model = AzureOpenAIEmbeddings(
-    azure_endpoint=os.getenv("AZURE_ENDPOINT"),
-    deployment=os.getenv("AZURE_EMBEDDING_DEPLOYMENT"),
-    api_key=os.getenv("AZURE_API_KEY"),
-    openai_api_version=os.getenv("AZURE_EMBEDDING_VERSION")
+    azure_endpoint=os.environ["AZURE_ENDPOINT"],
+    deployment=os.environ["AZURE_EMBEDDING_DEPLOYMENT"],
+    api_key=os.environ["AZURE_API_KEY"],
+    openai_api_version=os.environ["AZURE_EMBEDDING_VERSION"]
 )
-
 
 
 def clone_or_pull_repo():

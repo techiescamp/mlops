@@ -10,4 +10,4 @@ service:
   port: 3000
   nodePort: 30500
 
-backend_url: "http://rag-backend-service.default.svc.cluster.local:8000"
+backend_url: "http://rag-backend-service.rag.svc.cluster.local:8000"

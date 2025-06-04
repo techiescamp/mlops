@@ -1,3 +1,5 @@
-./hash_files.json
-./*.json
+*.json
 .env
+
+./temp-docs
+./k8_docs
