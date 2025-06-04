@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: backend-env
 data:
-  AZURE_ENDPOINT: "https://techiescamp-azure-ai.openai.azure.com/"
+  AZURE_ENDPOINT: "<open-ai-endpoint>"
   AZURE_CHAT_DEPLOYMENT: "gpt-4o-mini"
   OPENAI_API_VERSION: "2024-05-01-preview"
   VECTOR_DB_URL: "http://vector-store-service.default.svc.cluster.local:8001"

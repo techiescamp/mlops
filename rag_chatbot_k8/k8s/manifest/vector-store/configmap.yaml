@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: vector-store-env
 data:
-  AZURE_ENDPOINT: "https://techiescamp-azure-ai.openai.azure.com/"
+  AZURE_ENDPOINT: "<open-ai-endpoint>"
   AZURE_EMBEDDING_DEPLOYMENT: "text-embedding-3-small"
   AZURE_EMBEDDING_VERSION: "2024-12-01-preview"
   PORT: "8001"
