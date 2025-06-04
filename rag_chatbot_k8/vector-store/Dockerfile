@@ -25,6 +25,6 @@ COPY --from=builder /install /usr/local
 # Copy project files
 COPY index.py .
 
-EXPOSE 8000
+EXPOSE 8001
 
 CMD ["uvicorn", "index:app", "--host", "0.0.0.0", "--port", "8001"]

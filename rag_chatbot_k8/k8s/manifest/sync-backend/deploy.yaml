@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sync-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sync-backend
+  template:
+    metadata:
+      labels:
+        app: sync-backend
+    spec:
+      containers:
+        - name: backend
+          image: techiescamp/rag-sync-backend:1.0.0
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: sync-env
+          env:
+            - name: AZURE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sync-secret
+                  key: AZURE_API_KEY

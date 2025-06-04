@@ -7,6 +7,6 @@ tiktoken
 fastapi
 pydantic
 uvicorn
-dotenv
+python-dotenv
 scikit-learn
 requests

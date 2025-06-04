@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Install build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential gcc \
+    build-essential gcc git \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -19,6 +19,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
 
@@ -26,6 +30,6 @@ COPY --from=builder /install /usr/local
 COPY index.py .
 COPY components/ ./components/
 
-EXPOSE 8000
+EXPOSE 5000
 
 CMD ["python3", "index.py"] 
