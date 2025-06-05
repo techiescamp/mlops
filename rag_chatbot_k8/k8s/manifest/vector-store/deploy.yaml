@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: vector-store
-  namespace: default
 spec:
   serviceName: "vector-store-service"
   replicas: 1

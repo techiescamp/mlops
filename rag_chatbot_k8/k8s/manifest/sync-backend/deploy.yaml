@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: sync-backend
-  namespace: default
 spec:
   schedule: "0 0 * * *"
   timeZone: Asia/Kolkata
