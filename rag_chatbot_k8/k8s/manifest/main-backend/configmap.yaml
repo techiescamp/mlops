@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: backend-env
+  namespace: default
 data:
   AZURE_ENDPOINT: <azure-endpoint-url>
   AZURE_CHAT_DEPLOYMENT: "gpt-4o-mini"

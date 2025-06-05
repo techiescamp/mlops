@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rag-ui
+  namespace: default
   labels:
     app: rag-ui
 spec:
