@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: sync-env
 data:
-  AZURE_ENDPOINT: "<open-ai-endpoint>"
-  AZURE_EMBEDDING_DEPLOYMENT: "text-embedding-3-small"
-  AZURE_EMBEDDING_VERSION: "2024-12-01-preview"
-  K8_URL: "https://github.com/kubernetes/website"
-  VECTOR_DB_URL: "http://vector-store-service.default.svc.cluster.local:8001"
+  AZURE_ENDPOINT: <azure-endpoint-url>
+  AZURE_EMBEDDING_DEPLOYMENT: text-embedding-3-small
+  AZURE_EMBEDDING_VERSION: 2024-12-01-preview
+  K8_URL: https://github.com/kubernetes/website
+  VECTOR_DB_URL: http://vector-store-service.default.svc.cluster.local:8001

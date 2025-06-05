@@ -30,6 +30,4 @@ COPY --from=builder /install /usr/local
 COPY index.py .
 COPY components/ ./components/
 
-EXPOSE 5000
-
 CMD ["python3", "index.py"] 

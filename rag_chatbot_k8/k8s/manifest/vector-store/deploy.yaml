@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: vector-store
 spec:
-  serviceName: "vector-store"
+  serviceName: "vector-store-service"
   replicas: 1
   selector:
     matchLabels:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: vector-store
-          image: techiescamp/rag-vector-store:1.0.0
+          image: techiescamp/rag-vector-store:4.0.0
           ports:
             - containerPort: 8001
           envFrom:
@@ -27,6 +27,9 @@ spec:
                 secretKeyRef:
                   name: vector-store-secret
                   key: AZURE_API_KEY
+          volumeMounts:
+            - name: vector-store-data
+              mountPath: /app/vector_store
   volumeClaimTemplates:
     - metadata:
         name: vector-store-data

@@ -14,9 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: techiescamp/rag-sync-backend:1.0.0
-          ports:
-            - containerPort: 5000
+          image: techiescamp/rag-sync-backend:8.0.0
           envFrom:
             - configMapRef:
                 name: sync-env
