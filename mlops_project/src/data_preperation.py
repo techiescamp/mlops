@@ -1,0 +1,129 @@
+import pandas as pd
+import numpy as np
+import os
+import datetime
+from sklearn.preprocessing import OrdinalEncoder
+
+
+def prepare_data_for_feast(train_csv_path, test_csv_path, output_parquet_path):
+    """
+    Loads raw employee attrition data, applies specified preprocessing steps,
+    and saves the cleaned data as a Parquet file for Feast.
+    """
+    print(f"Loading data from {train_csv_path} and {test_csv_path}...")
+    try:
+        employee_train = pd.read_csv(train_csv_path)
+        employee_test = pd.read_csv(test_csv_path)
+    except FileNotFoundError as e:
+        print(f"Error: One or both CSV files not found. Please ensure they are in the correct directory. {e}")
+        return
+
+    employee_data = pd.concat([employee_train, employee_test])
+    print(f"Combined data shape: {employee_data.shape}")
+
+    # create unique employee_id and timestamp for Feast
+    employee_data["employee_id"] = employee_data.index + 1
+    employee_data['event_timestamp'] = pd.to_datetime(datetime.datetime.now()) - pd.to_timedelta(employee_data.index, unit='D')
+    print("Added 'employee_id' and 'event_timestamp' for feast")
+
+    X = employee_data.drop(['Employee ID', 'Attrition', 'Job Role', 'Distance from Home', 'Marital Status', 'Gender'], axis=1)
+    y = employee_data['Attrition']
+
+    # Ordinal Encoding for features
+    columns_to_encode = ['Work-Life Balance', 'Job Satisfaction', 'Performance Rating', 'Education Level', 'Job Level', 'Company Size', 'Company Reputation', 'Employee Recognition']
+    categories=[
+        ['Poor', 'Fair', 'Good', 'Excellent'], # Work-Life Balance
+        ['Low', 'Medium', 'High', 'Very High'], # Job Satisfaction
+        ['Low', 'Below Average', 'Average', 'High'], # Performance Rating
+        ["High School", "Bachelor’s Degree", "Master’s Degree", "Associate Degree", "PhD"], # Education Level
+        ['Entry', 'Mid', 'Senior'], # Job Level
+        ['Small', 'Medium', 'Large'], # Company Size
+        ['Poor', 'Fair', 'Good', 'Excellent'], # Company Reputation
+        ['Low', 'Medium', 'High', 'Very High'], # Employee Recognition
+    ]
+    print("Applying Ordinal Encoding...")
+    oe = OrdinalEncoder(categories=categories, handle_unknown='use_encoded_value', unknown_value=-1)
+    # ensure columns exists before performing encoding !!!
+    for col in columns_to_encode:
+        if col not in X.columns:
+            print(f"Warning: Column '{col}' not found in data. Skipping encoding for it.")
+            columns_to_encode.remove(col)
+
+    X[columns_to_encode] = oe.fit_transform(X[columns_to_encode]).astype('int')
+    print('✅ Ordinal Encoding is complete.')
+
+    # boolean mapping for 'yes' / 'no' columns
+    emp_bool_map = ['Overtime', 'Remote Work', 'Leadership Opportunities', 'Innovation Opportunities']
+    print("Applying boolean Mapping (Numerical Encoding)...")
+    for col in emp_bool_map: 
+        if col not in X.columns:
+            print(f"Warning: Column '{col}' not found for boolean mapping !!!")
+        else:
+            X[col] = X[col].map({'No': 0, 'Yes': 1})
+            print("✅ 'Boolean Mapping' is completed.")
+    
+    # Create 'Opportunities' feature
+    print("Creating 'Opportunities' feature...")
+    if 'Leadership Opportunities' in X.columns and 'Innovation Opportunities' in X.columns:
+        X['Opportunities'] = X['Leadership Opportunities'] + X['Innovation Opportunities']
+        X = X.drop(columns=['Leadership Opportunities', 'Innovation Opportunities'])
+    else:
+        print("Warning: 'Leadership Opportunities' or 'Innovation Opportunities' not found. Skipping 'Opportunities' creation.")
+    print("✅ 'Opportunities' feature created.")
+
+    # Define the function to map income ranges to ordinal values
+    def map_monthly_income(income):
+        if 1200 <= income <= 10000:
+            return 0
+        elif 10001 <= income <= 20000:
+            return 1
+        elif 20001 <= income <= 35000:
+            return 2
+        elif 35001 <= income <= 50000:
+            return 3
+        elif income >= 50001:
+            return 4
+        else:
+            return -1  # Handle any unexpected values
+
+    print("Mapping 'Monthly Income'...")
+    if 'Monthly Income' in X.columns:
+        X['Monthly Income'] = X['Monthly Income'].apply(map_monthly_income)
+        print("✅ 'Monthly Income' mapping complete.")
+    else:
+        print("Warning: 'Monthly Income' column not found.")
+        
+    # Label encoding for target values
+    print("Mapping 'Attrition' label...")
+    y = y.map({'Stayed': 0, 'Left': 1})
+    print("✅ 'Attrition' label mapping complete.")
+
+    # combine features (X) and target (y) for feast
+    final_df = pd.concat([X, y.rename('attrition_label')], axis=1)
+
+    # ensoure output_data directory exists !
+    output_dir = os.path.dirname(output_parquet_path)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print(f"Created Output Directory (parquet): {output_dir}")
+    
+    # save to parquet
+    print(f"Saving preprocessed data to {output_parquet_path}...")
+    final_df.to_parquet(output_parquet_path, index=False)
+
+    print("Data preparation complete and saved successfully.")
+    print(f"✅✅  Final data columns: {final_df.columns.tolist()}")
+
+
+
+
+if __name__ == "__main__":
+    # find .csv files from folder
+    data_dir = os.path.dirname(__file__)
+    train_path = os.path.join(data_dir, "..", 'raw_data', 'train.csv')
+    test_path = os.path.join(data_dir, "..", 'raw_data', 'test.csv')
+    output_parquet_path = os.path.join(data_dir, '..', 'feature_store/data', 'employee_preprocessed_data.parquet')
+
+    print("--- starting data preparation ---")
+
+    prepare_data_for_feast(train_path, test_path, output_parquet_path)

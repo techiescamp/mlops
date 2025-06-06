@@ -1,0 +1,6 @@
+mlflow
+flask
+flask-cors
+scikit-learn
+azure-storage-blob
+azure-identity
