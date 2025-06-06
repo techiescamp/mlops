@@ -77,9 +77,7 @@ def train_model():
 
     # metrics
     accuracy = accuracy_score(y_test, y_pred)
-    confusion_mat = confusion_matrix(y_test, y_pred)
-    classification = classification_report(y_test, y_pred)
-
+ 
     # # save model 
     column_names = X.columns.tolist()
     attrition_model = EmployeeAttritionModel(model_lr, scaler, oe, column_names, categories)

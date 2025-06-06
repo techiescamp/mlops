@@ -1,0 +1,6 @@
+pandas
+feast
+numpy
+scikit-learn
+fastparquet # pandas to support parquet
+mlflow
