@@ -9,7 +9,6 @@ spec:
 image:
   repository: techiescamp/rag-sync-backend
   tag: 8.0.0
-  pullPolicy: IfNotPresent
 
 config:
   azureEndpoint: <open-ai-endpoint>

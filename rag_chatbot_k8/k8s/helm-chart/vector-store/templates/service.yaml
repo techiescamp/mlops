@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: rag-{{ .Release.Namespace }}-service
+  name: rag-{{ .Release.Name }}-service
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
-    app: rag-main-backend
+    app: rag-vector-store
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.port }}

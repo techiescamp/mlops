@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: rag-{{ .Release.Name }}-deployment
+  name: rag-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
+  serviceName: rag-{{ .Release.Name }}-service
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
