@@ -1,0 +1,19 @@
+replicaCount: 1
+
+image:
+  repository: techiescamp/rag-backend
+  tag: 4.0.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+config:
+  azureEndpoint: <open-ai-endpoint>
+  azureChatDeployment: gpt-4o-mini
+  openaiApiVersion: 2024-05-01-preview
+  vectorStoreUrl: http://rag-vector-store-service.rag-storage.svc.cluster.local:8001
+
+secret:
+  azureApiKey: "<open-ai-api-key>"

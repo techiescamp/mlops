@@ -7,24 +7,24 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: rag-backend
+      app: rag-main-backend
   template:
     metadata:
       labels:
-        app: rag-backend
+        app: rag-main-backend
     spec:
       containers:
-        - name: backend
+        - name: main-backend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8000
+            - containerPort: {{ .Values.service.port }}
           envFrom:
             - configMapRef:
-                name: rag-configmap
+                name: rag-{{ .Release.Name }}-configmap
           env:
             - name: AZURE_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: rag-secret
+                  name: rag-{{ .Release.Name }}-secret
                   key: AZURE_API_KEY

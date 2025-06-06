@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-{{ .Release.Name }}-deployment
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: rag-vector-store
+  template:
+    metadata:
+      labels:
+        app: rag-vector-store
+    spec:
+      containers:
+        - name: rag-vector-store
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          envFrom:
+            - configMapRef:
+                name: rag-{{ .Release.Name }}-configmap
+          env:
+            - name: AZURE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-{{ .Release.Name }}-secret
+                  key: AZURE_API_KEY
+          volumeMounts:
+            - name: rag-{{ .Release.Name }}-data
+              mountPath: /app/vector_store
+  volumeClaimTemplates:
+    - metadata:
+        name: rag-{{ .Release.Name }}-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.volume.size }}
+        storageClassName: {{ .Values.volume.storageClassName }}

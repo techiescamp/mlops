@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: techiescamp/rag-frontend
-  tag: 1.0.0
+  tag: 2.0.0
   pullPolicy: IfNotPresent
 
 service:
@@ -10,4 +10,4 @@ service:
   port: 3000
   nodePort: 30500
 
-backend_url: "http://rag-backend-service.rag.svc.cluster.local:8000"
+backend_url: "http://rag-main-backend-service.rag-backend.svc.cluster.local:8000"
