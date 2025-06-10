@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-env
+data:
+  AZURE_ENDPOINT: <azure-endpoint-url>
+  AZURE_CHAT_DEPLOYMENT: gpt-4o-mini
+  AZURE_OPENAI_API_VERSION: 2024-05-01-preview
+  VECTOR_DB_URL: http://vector-store-service.default.svc.cluster.local:8001
+  HOST: "0.0.0.0"
+  PORT: "8000"

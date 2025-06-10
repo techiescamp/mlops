@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: attrition-ui
-        image: techiescamp/rag-frontend:1.0.0
+        image: techiescamp/rag-frontend:2.0.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000

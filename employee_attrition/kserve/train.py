@@ -81,9 +81,7 @@ def train_model():
     # metrics
     accuracy = accuracy_score(y_test, y_pred)
     print("accuracy: %d", accuracy)
-    confusion_mat = confusion_matrix(y_test, y_pred)
-    classification = classification_report(y_test, y_pred)
-
+   
     # # save model 
     # Save artifacts
     os.makedirs("models", exist_ok=True)

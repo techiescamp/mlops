@@ -1,34 +1,17 @@
-## RAG powered chatbot using kubernetes docs
 
-Note - The kubernetes docs can be found ![here](https://github.com/kubernetes/website/tree/main/content/en/docs). Copy the 'en' version of documents and save it in your project folder to use this DocuMancer AI locally.
-
+## RAG powered chatbot by webscraping the Kubernetes documents
 
 **RAG** - **Retrieval Augmented Generation** is a workflow that's simplifies the use of generating content by taking one's own knowledge base as reference. In fine-tuning, we have to store large content of data in the model, which can be resource-intensive and time-consuming, RAG streamlines the process by retrieving relevant information from a knowledge base dynamically and combining it with a language model to generate accurate, context-specific responses without the need for extensive retraining.
-
-## Purpose of DocuMancerK8s AI
-The DocuMancerK8s AI project aims to enhance access to Kubernetes documentation by utilizing a Retrieval-Augmented Generation (RAG) workflow. This approach enables efficient content retrieval from Kubernetes markdown files, streamlining the process of navigating and extracting information from the official documentation. 
-
-The project focuses on improving user interaction with Kubernetes resources, making it easier to understand and apply complex concepts. The Kubernetes documentation, which serves as the primary data source, is available for download at https://github.com/kubernetes/website/tree/main/content/en/docs. 
-
-This initiative seeks to empower users by providing a more intuitive and effective way to engage with Kubernetes documentation, supporting both learning and practical implementation.
-
-## Why Use This Chatbot?
-----------------------------------
-- **Accurate Answers:** Retrieves and generates responses based on your project’s documentation.
-- **Context-Aware:** Maintains conversation history for coherent interactions.
-- **Efficient:** Uses vector search (FAISS) for fast document retrieval.
-- **Cost-Conscious:** Tracks token usage and estimates costs for Azure OpenAI API calls.
-- **Customizable:** Easily adapt the pipeline to other document formats or LLMs.
 
 
 ## Github Actions workflow steps:
 -------------------------------------------
-When forking the project follow the below actions:
+On push and pull requests follow the below actions:
 
 Backend: 
 - python version - 3.13.3
 - Install dependencies - `pip install -r requirements.txt`
-- Run backend code - `python app.py` or `uvicorn main:app --reload`
+- Run backend code - `pyton app.py` or `uvicorn main:app --reload`
 
 Frontend:
 - node version - 22.14.0
@@ -56,77 +39,146 @@ To set up and run the project, follow these steps:
 - Azure OpenAI API credentials (set in a .env file)
 - Markdown files in the docs/ directory
 
-## Installation
-1. Clone the repository
+## Setup files
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/rag-chatbot.git
-cd rag-chatbot
+git clone https://github.com/techiescamp/mlops.git
+cd rag_chatbot_k8
 ```
 
-2. Install dependencies
+### 2. Install dependencies
+### i. sync-docs folder:
+
+- Create .env
+
+```bash
+# .env
+AZURE_ENDPOINT=<http://your-azure-resource>
+AZURE_API_KEY=<your-api-key-from-azure>
+
+AZURE_EMBEDDING_DEPLOYMENT=<text-embedding-model-model>
+AZURE_EMBEDDING_VERSION=<text-embedding-model-version-date-on-azure>
+
+K8_URL=<k8-github-repo-url>
+VECTOR_DB_URL=<vector-db-url>
+```
+
+- Create venv 
+
+```bash
+python -m venv venv
+
+venv/Scripts/activate (for windows)
+source ./venv/Scripts/activate (for bash)
+```
+
+- Install requirements.txt
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up environment variables in a .env file:
+- Run code
 
-```plaintext
-AZURE_ENDPOINT=<azure-endpoint>
-AZURE_API_KEY=<azure-openai-api-key>
-AZURE_DEPLOYMENT=<model-name:(e.g: gpt-4o-mini)>
-OPENAI_API_VERSION=<version-date-in-azure:(e.g: 2024-13-3)>
-GITHUB_REPOSITORY=<github-repo>
+```bash
+python index.py
 ```
 
-4. Place your Markdown documentation in the `k8_docs/en/` directory
+<!-- ------------- -->
 
-## Running the Application
+### vector-db folder
 
-1. Start the FastAPI server
+- Create .env
 
-```
-python app.py
-```
+```bash
+# .env
+AZURE_ENDPOINT=<http://your-azure-resource>
+AZURE_API_KEY=<your-api-key-from-azure>
 
-or
+AZURE_EMBEDDING_DEPLOYMENT=<text-embedding-model-model>
+AZURE_EMBEDDING_VERSION=<text-embedding-model-version-date-on-azure>
 
-```
-uvicorn main:app --reload
-```
-
-2. Access the API at http://localhost:8000.
-3. Use a frontend (e.g., a React app) or tools like Postman to send queries to POST /query
-
-## Example Query
-```json
-{
-  "query": "Explain service traffic policy in k8"
-}
+PORT=<port>
+HOST=<vector-db-url-name>
 ```
 
-## Example Response
-  The FastAPI server sends the JSON response to the client.
+Create venv 
 
-```json
-{
-  "answer": "Service Internal Traffic Policy in Kubernetes is a feature that allows for efficient communication between Pods on the same node within a cluster. When two Pods need to connect, using this policy...",
-  "sources": [
-    {"filename": "service-pods-2.md", "chunk_id": 2},
-    {"filename": "service-pods-3.md", "chunk_id": 3},
-    {"filename": "service-pods-11.md", "chunk_id": 11}
-  ],
-  "input_tokens": 123,
-  "output_tokens": 78,
-  "estimated_cost": 0.0048
-}
+```bash
+python -m venv venv
+
+venv/Scripts/activate (for windows)
+source ./venv/Scripts/activate (for bash)
 
 ```
 
-## Frontend Setup
+- Install requirements.txt
 
-- If you are in different folder => `rag_chatbot_k8/frontend/` 
+```bash
+pip install -r requirements.txt
+```
+
+Run code
+
+```bash
+python index.py
+
+or 
+
+uv run index.py (preferred)
+```
+
+<!-- ------------ -->
+
+### Main Backend folder:
+
+- Create .env
+
+```bash
+# .env
+AZURE_ENDPOINT=<http://your-azure-resource>
+AZURE_API_KEY=<your-api-key-from-azure>
+
+AZURE_CHAT_DEPLOYMENT=<gpt-model>
+OPENAI_API_VERSION=<gpt-model-version-date-on-azure>
+
+VECTOR_DB_URL=<backend-url>
+HOST=<dns-name>
+PORT=<port>
+```
+
+- Create venv 
+
+```bash
+python -m venv venv
+
+venv/Scripts/activate (for windows)
+source ./venv/Scripts/activate (for bash)
+```
+
+- Install requirements.txt
+
+```bash
+pip install -r requirements.txt
+```
+
+
+- Run code
+
+```bash
+python main.py
+
+or 
+
+uv run main.py (preferred)
+```
+
+<!-- ----------------------- -->
+
+### For Frontend Setup
+
+- If you are in different folder => `rag_Chatbot/frontend/` 
 - If you are in same folder => `frontend/`
 
 ```bash
@@ -147,99 +199,113 @@ or
 npm run build (for production environment)
 ```
 
+```
 
-## Detailed Explanation of Workflow
-----------------------------------------------------------------------------
-### Client (Frontend)
-The process starts with a client (e.g., a React app at http://localhost:3000) sending requests to the FastAPI backend.
+### Example Query
+```json
+{
+  "query": "What is memoization?"
+}
+```
 
-### FastAPI Application
-The entry point is the FastAPI app, which handles CORS middleware and main endpoint:
-`POST /query:` The core endpoint for processing user queries with the RAG pipeline.
+### Example Response
 
-### Query Processing (POST /query)
-The client sends a JSON payload (e.g., {"query": "What is memoization?"}) to /query.
-The request is validated using QueryRequest (Pydantic model).
-
-### RAG Pipeline
-The RAG pipeline is modularized, with code organized in the components/ folder.
-
-`Load Markdown Docs`: In `dcoument_loader.py` file, the load_md_files() reads .md files from the `k8_docs/en` directory storing them as a list of dictionaries containing filenames and content.
-
-`Select Relevant Documents`: 
-The document_loader.py module handles document selection:
-  - If filename_embeddings.pkl is not cached locally, precompute() generates filename embeddings for faster future access.
-  - select_relevant_files() picks the top 5 documents (k=5) based on the user’s query and passes them to text_splitter().
-
-`Text Splitting`: text_splitter() uses RecursiveCharacterTextSplitter to break the Markdown content into smaller chunks (500 characters, 100 overlap), creating Document objects with metadata.
-
-`Vector Store (FAISS)`: load_vector_store() either loads an existing FAISS index from ./faiss-db or creates a new one using embeddings from HuggingFaceEmbeddings (all-MiniLM-L6-v2 model).
-
-`Retriever`: retrieve_documents() configures the FAISS vector store as a retriever to fetch the top 3 relevant document chunks based on the query.
-
-`Memory`: create_memory() initializes ConversationBufferMemory to store the last 5 question-answer pairs, maintaining chat history.
-
-`Augmentation Chain`: augmentation() builds a chain with:
-    - A ChatPromptTemplate combining chat history, context (retrieved docs), and the query.
-    - Then set `chaining` feature of langchain to combine the events of fetching files to calling LLM model:
-        - The retriever to fetch context.
-        - The AzureChatOpenAI LLM to generate answers.
-        - A StrOutputParser to format the output.
-        - AzureChatOpenAI LLM: The LLM (configured with Azure credentials from .env) processes the prompt and generates a response based on the context and history.
-
-### Cost Estimation
-`estimate_cost()`: This function uses tiktoken to count input and output tokens, calculating the cost based on predefined rates (INPUT_TOKEN_COST and OUTPUT_TOKEN_COST).
-
-### Response Generation
-The response includes:
-    `answer`: The LLM-generated response.
-    `sources`: Metadata of retrieved documents (e.g., filenames and chunk IDs).
-    `input_tokens, output_tokens, estimated_cost`: Token usage and cost details.
-The query and answer are saved to memory for future context.
+```json
+{
+  "answer": "Memoization is an optimization technique used primarily to speed up computer programs by storing the results of expensive function calls and reusing them when the same inputs occur again.",
+  "sources": [
+    {"filename": "concepts.md", "chunk_id": 1},
+    {"filename": "optimization.md", "chunk_id": 3}
+  ]
+}
+```
 
 
-## RAG Performance Metrics
--------------------------------------------------------------------------
-### A. Retrieval Metrics: 
-Measures how well the retriever fetches relevant documents.
+### Why Use This Chatbot?
+----------------------------------
+- **Accurate Answers:** Retrieves and generates responses based on your project’s documentation.
+- **Context-Aware:** Maintains conversation history for coherent interactions.
+- **Efficient:** Uses vector search (FAISS) for fast document retrieval.
+- **Cost-Conscious:** Tracks token usage and estimates costs for Azure OpenAI API calls.
+- **Customizable:** Easily adapt the pipeline to other document formats or LLMs.
+=======
+### For sync-docs:
 
-1. Recall@k: Proportion of relevant documents retrieved in the top-k.
+1. create .env
 
-2. Precision@k: Proportion of top-k documents that are relevant.
+2. create venv 
 
-3. MRR (Mean Reciprocal Rank): Average of reciprocal ranks of the first relevant result.
+```bash
+python -m venv venv
 
-### B. Generation Metrics:
-Measures how well the LLM generate response using relvant docuemnts.
+venv/Scripts/activate (for windows)
+source ./venv/Scripts/activate (for bash)
+```
 
-1. **Semantic Similarity:** Cosine similarity between the generated answer and the retrieved context, assessing grounding.
+3. run code
 
-2. **Out-of-Context:** Checks for the 🌟 emoji to detect retriever failures.
+```bash
+python index.py
+```
+
+<!-- ------------- -->
+
+### For vector-db:
+
+1. create .env
+
+2. create venv 
+
+```bash
+python -m venv venv
+
+venv/Scripts/activate (for windows)
+source ./venv/Scripts/activate (for bash)
+
+```
+
+3. run code
+
+```bash
+python index.py
+
+or 
+
+uv run index.py (preferred)
+```
+
+<!-- ------------ -->
+
+### For backend:
+
+1. create .env
+
+2. create venv 
+
+```bash
+python -m venv venv
+
+venv/Scripts/activate (for windows)
+source ./venv/Scripts/activate (for bash)
+
+```
+
+3. run code
+
+```bash
+python main.py
+
+or 
+
+uv run main.py (preferred)
+```
 
 
-### Implementation steps of metrics:
-Metrics ae implemented in `runtime_evaluator.py` and `utils.py`. 
-
-**`runtime_evaluator.py` file:**
-
-- `_get_relevant_sources:` Uses a list comprehension to filter documents with similarity above similarity_threshold.
-- `_get_query_doc_similarity:` Computes average similarity with a single loop.
-- `_get_document_diversity:` Simplifies pairwise similarity calculation using a list comprehension.
-- `evaluate_retrieval` and `evaluate_generation:` Combine metrics clearly without redundant computations.
-
-**`utils.py` file:** 
-- All similarity calculations use compute_semantic_similarity and compute_text_overlap.
-
-
-### Contributing
------------------------------------------------------
+### Contribution
+-----
 We welcome contributions from the security community. Please read our ![Contributing Guidelines](../CONTRIBUTION.md) before submitting pull requests.
 
 ### License
-----------------------------------------------------
 This project is licensed under the ![MIT License](../LICENCE). See the  file for details
+=======
 
-
-langchain_core
-langchain_community
-langchain

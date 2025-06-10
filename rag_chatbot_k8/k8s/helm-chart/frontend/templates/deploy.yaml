@@ -20,7 +20,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: 3000
+        - containerPort: {{ .Values.service.port }}
           name: http
         env:
         - name: REACT_APP_API_URL

@@ -1,0 +1,22 @@
+replicaCount: 1
+
+image:
+  repository: techiescamp/rag-vector-store
+  tag: 4.0.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8001
+
+config:
+  azureEndpoint: <open-ai-endpoint>
+  azureEmbeddingDeployment: text-embedding-3-small
+  azureEmbeddingVersion: 2024-12-01-preview
+
+secret:
+  azureApiKey: "<open-ai-api-key>"
+
+volume:
+  size: 1Gi
+  storageClassName: default
