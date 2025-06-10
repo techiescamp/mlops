@@ -3,3 +3,5 @@ mlruns
 venv
 assets
 mlartifacts
+.env
+frontend/.env
