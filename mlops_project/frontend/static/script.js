@@ -7,7 +7,7 @@ document.getElementById('prediction_form').addEventListener('submit', (e) => {
     })
     let keys = ['Age', 'Years at Company', 'Monthly Income', 'Number of Promotions', 'Company Tenure', 'Number of Dependents']
     keys.forEach(item => data[item] = Number(data[item]))
-    const newData = {...data, 'employee_id': 143}
+    const newData = {...data, 'employee_id': 103}
     console.log(newData)
     console.log(PREDICTION_API_URL)
 
@@ -21,9 +21,9 @@ document.getElementById('prediction_form').addEventListener('submit', (e) => {
         console.log(result)
         let response;
         if(result.prediction === 1) {
-            response = "Stayed"
+            response = "Left"
         } else {
-            response = "Left" 
+            response = "Stayed" 
         }
         const showResult = document.getElementById('result')
         showResult.style.display = 'block'

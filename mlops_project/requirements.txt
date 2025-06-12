@@ -8,4 +8,6 @@ flask
 flask-cors
 pydantic
 typing
+redis
 azure
+pandera[pandas]

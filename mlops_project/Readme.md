@@ -3,26 +3,39 @@
 ## Folder Structure:
 
 ```bash
-employee_attrition_mlops/
-└── raw_data
-    └── train.csv
-    └── test.csv
+mlops_project/
+├── assets/
 ├── feature_store/
-    └── feature_store.yaml
-    └── features.py
-    ├── data/
-        └── employee_preprocessed_data.parquet
-        └── online_store.db
-        └── registry.db
-└── src
-    └── data_preparation.py
-    └── train_model.py
+│   ├── data/
+│   ├── __init__.py
+│   ├── feature_order.py
+│   ├── feature_store.yaml
+│   ├── features.py
 ├── frontend/
-    └── app.py
-    └── templates/
-        └── index.html
-|_ .env
-|_ readme.md
+├── kserve/
+│   ├── predictor.py
+├── mlruns/
+├── monitoring/
+│   ├── __init__.py
+│   ├── inference_logs.csv
+│   ├── logger.py
+├── prediction-service/
+│   ├── __init__.py
+│   ├── app.py
+├── raw_data/
+├── src/
+│   ├── __init__.py
+│   ├── data_analysis.py
+│   ├── data_preperation.py
+│   ├── data_validation.py
+│   ├── pipeline.py
+│   ├── train_model.py
+├── venv/
+├── .gitignore
+├── output.txt
+├── Readme.md
+├── requirements.txt
+
 
 ```
 
@@ -50,16 +63,17 @@ fastparquet # pandas to support parquet
 mlflow
 ```
 
-### First run `src/data_preparation.py`
+### first run `data_preparation.py`
+
 ```bash
 cd src
 
-python data_preperation.py
+python data_preparation.py
 ```
 
 ### Second run Feature-Store
 
-Go to project directory `feature-store/`
+On new terminal, go to project directory `feature-store/`
 
 ```bash
 cd feature-store
@@ -68,15 +82,22 @@ feast apply
 feast materialize 2024-01-01T00:00:00 2025-06-05T23:59:59
 ```
 
-### Third run `src/train_model.py`
+### Third run `src/pipeline.py`
+Note: In same mlops_project/ folder (root directory run this code)
+
+```bash
+cd ../  # should be mlops_project/ folder
+
+python -m src.pipeline
+```
+
+### (Optional: For local MLflow setup) using `http://localhost:5000`
 
 ```bash
 mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 127.0.0.1 --port 5000
-
-
-cd src  # got to mlops_project/src/ directory
-python train_model.py
 ```
+
+### For IP address MLflow setup no need to run mlflow server.
 
 ### Fourth run `kserve/predictor.py`
 
@@ -92,8 +113,9 @@ python predictor.py
 ```bash
 # set .env variable as KSERVE_URL
 
-cd prediction-service  # got to mlops_project/src/ directory
-python app.py
+cd ../  # go to mlops_project/  root directory and run command there
+
+python -m prediciton-service.app
 ```
 
 ### Frontend `frontend/app.py` (frotnend) - flask
