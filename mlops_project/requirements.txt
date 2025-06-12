@@ -4,3 +4,8 @@ numpy
 scikit-learn
 fastparquet # pandas to support parquet
 mlflow
+flask
+flask-cors
+pydantic
+typing
+azure

@@ -7,18 +7,26 @@ document.getElementById('prediction_form').addEventListener('submit', (e) => {
     })
     let keys = ['Age', 'Years at Company', 'Monthly Income', 'Number of Promotions', 'Company Tenure', 'Number of Dependents']
     keys.forEach(item => data[item] = Number(data[item]))
-    console.log(data)
+    const newData = {...data, 'employee_id': 143}
+    console.log(newData)
+    console.log(PREDICTION_API_URL)
 
-    fetch('/predict', {
+    fetch(PREDICTION_API_URL, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify({ data: newData }),
         headers: { 'Content-Type': 'application/json' }
     })
     .then(res => res.json())
     .then(result => {
         console.log(result)
+        let response;
+        if(result.prediction === 1) {
+            response = "Stayed"
+        } else {
+            response = "Left" 
+        }
         const showResult = document.getElementById('result')
         showResult.style.display = 'block'
-        showResult.innerHTML = `<b>Prediction:</b> ${result.prediction}`
+        showResult.innerHTML = `<b>Prediction:</b> ${response}`
     })
 })
