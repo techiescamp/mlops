@@ -5,3 +5,5 @@ assets
 mlartifacts
 .env
 frontend/.env
+__pycache__
+*/__pycache__

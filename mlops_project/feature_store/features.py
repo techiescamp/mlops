@@ -41,10 +41,6 @@ employee_features_fv = FeatureView(
 
 #  testing or logging the feature values
 feature_count = len(employee_features_fv.schema)
-print('✅ total features in feast: ', feature_count)
+print('total features in feast: ', feature_count)
 
-for fv in employee_features_fv.schema:
-    print(f'{fv.name}\n')
-
-
-# 18 feature names
+# 18 feature namesclear
