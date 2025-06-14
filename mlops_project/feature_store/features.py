@@ -1,5 +1,5 @@
 # features.py
-from feast import Entity, FeatureView, Field, FileSource, ValueType
+from feast import Entity, FeatureView, Field, FileSource, ValueType, FeatureService
 from feast.types import Int64
 from datetime import timedelta
 
@@ -37,6 +37,20 @@ employee_features_fv = FeatureView(
         Field(name="attrition_label", dtype=Int64),  # The target label for training
     ],
     source=employee_preprocessed_source,
+)
+
+# Define a FeatureService for your employee attrition model
+employee_attrition_fs = FeatureService(
+    name="employee_attrition_features",
+    features=[
+        employee_features_fv[["Age", "Company Reputation", "Company Size", "Company Tenure",
+                              "Education Level", "Employee Recognition", "Job Level",
+                              "Job Satisfaction", "Monthly Income", "Number of Dependents",
+                              "Number of Promotions", "Opportunities", "Overtime",
+                              "Performance Rating", "Remote Work", "Work-Life Balance",
+                              "Years at Company"]]
+    ]
+    # Note: 'attrition_label' is not included here as it's typically the target, not a feature for inference
 )
 
 #  testing or logging the feature values
