@@ -20,6 +20,7 @@ def load_and_combine_data(data_dir):
     print("Added 'employee_attrition_data.csv' to raw_data folder")
     return employee_data, combined_data_path
 
+
 def analyze_data(df):
     print(f"Shape: {df.shape}")
     print(f"Columns: {df.columns}")
@@ -29,4 +30,4 @@ def analyze_data(df):
 
 if __name__ == "__main__":
     print(" --- data analysis ---")
-    
+   

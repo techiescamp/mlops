@@ -1,12 +1,13 @@
-from fastapi import FastAPI, Request
+import json
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import requests
 import pandas as pd
 import time
 
-from feast import FeatureStore
-from feature_store.features import employee_features_fv
+# from feast import FeatureStore
+# from feature_store.features import employee_features_fv
 
 from sklearn.preprocessing import OrdinalEncoder
 from pydantic import BaseModel, Field
@@ -14,10 +15,15 @@ from typing import Any, Dict, Optional
 import os
 from dotenv import load_dotenv
 
-from monitoring.logger import log_metrics
+# from monitoring.logger import log_metrics
 
 
 load_dotenv()
+
+FEAST_SERVER_URL = os.environ.get("FEAST_SERVER_URL", "http://localhost:5050") # Or the load balancer URL if on K8s
+KSERVE_URL = os.environ.get("KSERVE_URL", "http://localhost:8002/v1/models/mlops_employee_attrition:predict")
+MONITORING_URL = os.environ.get("MONITORING_URL", "http://localhost:8001")
+
 
 app = FastAPI()
 
@@ -102,20 +108,40 @@ def preprocess_input(data: dict):
     return df
 
 
-def sort_features():
-    feast_repo_path = "./feature_store"
-    FEAST_STORE = FeatureStore(repo_path=feast_repo_path)
-    print(f"Feast FeatureStore initialized with repo_path: {FEAST_STORE.repo_path}")
+def get_employee_features_via_server(emp_id: int):
+    payload = {
+        "feature_service": "employee_attrition_features",
+        "entities": {
+            "employee_id": [emp_id]
+        }
+    }
+    headers = {"Content-Type": "application/json"}
+   
+    try:
+        response = requests.post(
+            f"{FEAST_SERVER_URL}/get-online-features",
+            data=json.dumps(payload),
+            headers=headers
+        )
+        response.raise_for_status() # Raise an exception for HTTP errors (4xx or 5xx)
+        feature_names = response.json().get('metadata', {}).get('feature_names', [])
+        # Filter out employee_id as it's an entity key, not a feature for the model
+        filtered_feature_names = [name for name in feature_names if name != 'employee_id']
+        print(f"Feature_name: {filtered_feature_names}")
+        return sorted(filtered_feature_names)
+    except Exception as e:
+        print(f"Error communicating with Feast server: {e}")
+        return None
 
-    # --- Dynamic Model Feature List Generation (Canonical Order) ---
-    # This list MUST exactly match the features and their order used for model training (X_train)
-    # and the features KServe's predictor expects.
-    final_model_feature_order = sorted([
-        field.name for field in employee_features_fv.schema
-        if field.name not in ["employee_id", "attrition_label", "event_timestamp", "created_timestamp"]
-    ])
-    print(f"Final model feature order: {final_model_feature_order}")
-    return final_model_feature_order
+
+def log_metrics_service(data: dict):
+    try:
+        response = requests.post(f"{MONITORING_URL}/log", json=data)
+        response.raise_for_status()
+        print("Metrics sent to monitoring service successfully!")
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending metrics to monitoring service: {e}")
+
 
 
 class FormData(BaseModel):
@@ -136,21 +162,22 @@ async def predict(payload: FormData):
         preprocessed_input_data = preprocess_input(payload.data)
         print(f"✅Transformed Input: ", preprocessed_input_data.columns)
 
-        FINAL_MODEL_FEATURE_ORDER = sort_features()
+        FINAL_MODEL_FEATURE_ORDER = get_employee_features_via_server(payload.data['employee_id'])
         final_input = preprocessed_input_data.reindex(columns=FINAL_MODEL_FEATURE_ORDER, fill_value=0)
 
         # validation: check for any NaNs introduced by reindexing
-        if final_input.isnull().any().any():
+        if final_input is None:
             status = "input_error"
-            print(f"❌ NaNs found in final model input DataFrame after reindexing: {final_input.isnull().sum().to_dict()}")
-            return {"error": "Missing or invalid features after preprocessing. Check input data and feature definitions."}
+            print(f"Feast service did not find features: {final_input}")
+            return {"error": "Feast service did not find features: {final_input}."}
 
         print(f"Final input DataFrame shape for KServe: {final_input.shape}")
         print(f"Final input DataFrame columns for KServe: {final_input.columns.tolist()}")
 
         # Send to KServe model running locally
-        kserve_url = os.environ.get("KSERVE_URL", "http://localhost:8002/v1/models/mlops_employee_attrition:predict")
-        response = requests.post(kserve_url, json={"instances": final_input.to_dict(orient="records")})
+        response = requests.post(KSERVE_URL, json={"instances": final_input.to_dict(orient="records")})
+
+
         response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
         
         print('✅😷 result: ', response.json())
@@ -160,8 +187,8 @@ async def predict(payload: FormData):
     
     except requests.exceptions.RequestException as e:
         status = "kserve_error"
-        print(f"Error communicating with KServe: {e}", exc_info=True)
-        return {"error": f"Error from KServe: {e}. Check KServe logs for details."}
+        print(f"Error communicating with KServe: {e}")
+        raise HTTPException(status_code=500, detail=f"Error from KServe: {e}. Check KServe logs for details.")
 
     except Exception as e:
         status = "internal_error"
@@ -170,24 +197,13 @@ async def predict(payload: FormData):
     finally:
         end_time = time.time()
         latency = (end_time - start_time) * 1000
-        log_metrics({
+        log_metrics_service({
             "latency_ms": latency,
             "status": status,
             "prediction": prediction_output,
         })
 
-@app.get("/metrics")
-async def metrics():
-    import csv
-    csv_path = os.path.join("monitoring", "inference_logs.csv")
-    
-    if not os.path.exists(csv_path):
-        return {"error": "metrics file not found"}
-    
-    with open(csv_path, newline='') as file:
-        reader = csv.DictReader(file)
-        logs = list(reader)
 
-    return {"metrics": logs}
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

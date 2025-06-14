@@ -1,11 +1,13 @@
 import pandas as pd
 import numpy as np
 import os
-import datetime
 from sklearn.preprocessing import OrdinalEncoder
 
-
-def prepare_data_for_feast(X, y, output_parquet_path):
+    
+def prepare_data_encoding(validated_employee_data: pd.DataFrame):
+    X = validated_employee_data.drop(['Employee ID', 'Attrition', 'Job Role', 'Distance from Home', 'Marital Status', 'Gender'], axis=1)
+    y = validated_employee_data['Attrition']
+    
     # 1. Ordinal Encoding for features
     columns_to_encode = ['Work-Life Balance', 'Job Satisfaction', 'Performance Rating', 'Education Level', 'Job Level', 'Company Size', 'Company Reputation', 'Employee Recognition']
     categories=[
@@ -72,48 +74,12 @@ def prepare_data_for_feast(X, y, output_parquet_path):
 
     # combine features (X) and target (y) for feast
     final_df = pd.concat([X, y.rename('attrition_label')], axis=1)
-
-    # ensoure output_data directory exists !
-    output_dir = os.path.dirname(output_parquet_path)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-        print(f"Created Output Directory (parquet): {output_dir}")
+    return final_df
     
-    # save to parquet
-    final_df.to_parquet(output_parquet_path, index=False)
-
-    print("Data preparation complete and saved successfully.")
-    print(f"Final data columns: {final_df.columns.tolist()}")
-    print("Column names: ", {final_df.shape})
 
 
 if __name__ == "__main__":
     print(" --- data preparation ---")
-     # find .csv files from folder
-    data_dir = os.path.dirname(__file__)  # C:../../mlops_project/src
-    train_path = os.path.join(data_dir, "..", 'raw_data', 'train.csv') # C:../../mlops_project/raw_data/train.csv
-    test_path = os.path.join(data_dir, "..", 'raw_data', 'test.csv')
-    output_parquet_path = os.path.join(data_dir, '..', 'feature_store/data', 'employee_preprocessed_data.parquet') 
 
-    print(f"🔃 Loading data from {train_path} and {test_path}...")
-    try:
-        employee_train = pd.read_csv(train_path)
-        employee_test = pd.read_csv(test_path)
-    except FileNotFoundError as e:
-        print(f"❌ Error: One or both CSV files not found. Please ensure they are in the correct directory. {e}")
-
-    employee_data = pd.concat([employee_train, employee_test])
-    print(f"🔍 Combined data shape: {employee_data.shape}")
-
-    # create unique employee_id and timestamp for Feast
-    employee_data["employee_id"] = employee_data.index + 1
-    employee_data['event_timestamp'] = pd.to_datetime(datetime.datetime.now()) - pd.to_timedelta(employee_data.index, unit='D')
-    print("✅ Added 'employee_id' and 'event_timestamp' for feast")
-
-    X = employee_data.drop(['Employee ID', 'Attrition', 'Job Role', 'Distance from Home', 'Marital Status', 'Gender'], axis=1)
-    y = employee_data['Attrition']
-
-    prepare_data_for_feast(X, y, output_parquet_path)
     
-
-
+    

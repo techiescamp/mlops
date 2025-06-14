@@ -63,15 +63,17 @@ fastparquet # pandas to support parquet
 mlflow
 ```
 
-### first run `data_preparation.py`
+### 1. `src/data_engg_pipeline.py`
 
 ```bash
-cd src
+# at root directory 'mlops_project/'
 
-python data_preparation.py
+python -m src.data_engg_pipeline
 ```
 
-### Second run Feature-Store
+This will create raw_data -> employee_attrition.csv (combined train.csv and test.csv)
+
+### 2. Feature-Store
 
 On new terminal, go to project directory `feature-store/`
 
@@ -79,23 +81,55 @@ On new terminal, go to project directory `feature-store/`
 cd feature-store
 
 feast apply
-feast materialize 2024-01-01T00:00:00 2025-06-05T23:59:59
+feast materialize-incremental 2025-12-31T23:59:59
 ```
 
-### Third run `src/pipeline.py`
-Note: In same mlops_project/ folder (root directory run this code)
+Then again run server
 
 ```bash
-cd ../  # should be mlops_project/ folder
-
-python -m src.pipeline
+python main.py
 ```
 
-### (Optional: For local MLflow setup) using `http://localhost:5000`
+For default server run without main.py
+
+```bash
+feast serve
+```
+
+This will run the server at default port `http://localhost:6566`
+
+
+### 3.a. (Optional: For local MLflow setup) using `http://localhost:5000`
+
+This module runs when mlflow server is already up and running or else create new one by opening new terminal and run this mlflow command
 
 ```bash
 mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 127.0.0.1 --port 5000
 ```
+
+### 3.b. MLflow with cluster IP:
+
+Since it is authenticated with Azure, have to login to azure-cli 
+
+```bash
+pip install azure
+```
+
+- Run the `$env` to authenticate azure.
+- Then run the following pipeline, so that our model will be registered.
+
+
+### 4. `src/pipeline.py`
+Note: In same mlops_project/ folder (root directory run this code)
+
+
+On new terminal run the command at root folder `mlops_project/`
+```bash
+cd ../  # should be mlops_project/ folder
+
+python -m src.model_pipeline
+```
+
 
 ### For IP address MLflow setup no need to run mlflow server.
 
@@ -113,9 +147,9 @@ python predictor.py
 ```bash
 # set .env variable as KSERVE_URL
 
-cd ../  # go to mlops_project/  root directory and run command there
+cd prediction_service  # go to mlops_project/  root directory and run command there
 
-python -m prediciton-service.app
+python app.py
 ```
 
 ### Frontend `frontend/app.py` (frotnend) - flask
@@ -130,3 +164,23 @@ python app.py
 # ------------------------------------------------------
 
 Example for local MLflow development url - # model_uri="../mlruns/0/<run-id>/artifacts/attrition_model_pipeline",
+
+
+### Services Are:
+
+1. MLflow for Model Registry - ip-address 
+
+2. KServe - ip-address
+
+3. Feast - ip-address   => 4.154.210.230:30800
+
+4. Redis DB for Online Store- 4.154.210.230:30379
+
+5. Prediction-Backend - ip-address
+
+6. Frontend - ip-address
+
+
+### Kubernetes Job:
+
+src/ folder => data_engg_pipeline and model_pipeline

@@ -2,8 +2,8 @@ project: mlops_project
 registry: data/registry.db # Path to the Feast registry file, relative to feature_store/
 provider: local
 online_store:
-    type: sqlite
-    path: data/online_store.db
+    type: redis
+    connection_string: "4.154.210.230:30379"
 offline_store:
     type: file
 
@@ -18,3 +18,14 @@ offline_store:
 # offline_store:
 #     type: s3                               # <-- Offline store now S3
 #     s3_endpoint_override: null
+
+
+
+# project: mlops_project
+# registry: data/registry.db # Path to the Feast registry file, relative to feature_store/
+# provider: local
+# online_store:
+#     type: sqlite
+#     path: data/online_store.db
+# offline_store:
+#     type: file
