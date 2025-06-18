@@ -112,7 +112,8 @@ mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./
 Since it is authenticated with Azure, have to login to azure-cli 
 
 ```bash
-pip install azure
+pip install azure-identity
+pip install azure-storage-blob
 ```
 
 - Run the `$env` to authenticate azure.
@@ -168,20 +169,12 @@ Example for local MLflow development url - # model_uri="../mlruns/0/<run-id>/art
 
 ### Services Are:
 
-1. MLflow for Model Registry - ip-address 
+1. MLflow for Model Registry 
+2. KServe 
+3. Feast 
+4. Postgres for offline store
+5. Redis DB for Online Store
+6. Prediction-Backend 
+7. Frontend 
 
-2. KServe - ip-address
-
-3. Feast - ip-address   => 4.154.210.230:30800
-
-4. Redis DB for Online Store- 4.154.210.230:30379
-
-5. Prediction-Backend - ip-address
-
-6. Frontend - ip-address
-
-
-### Kubernetes Job:
-
-src/ folder => data_engg_pipeline and model_pipeline
 
