@@ -1,3 +1,20 @@
+# project: mlops_project
+# registry: 
+#     registry_type: sql
+#     path: postgresql+psycopg://feast:feast@4.154.210.230:30032/feast
+#     cache_ttl_seconds: 60
+#     sqlalchemy_config_kwargs:
+#         echo: false
+#         pool_pre_ping: true 
+# provider: local                           
+# online_store:
+#     type: redis
+#     connection_string: "4.154.210.230:30379"
+# offline_store:
+#     type: file                              
+
+# path: postgresql+psycopg://${POSTGRES_USER:=postgres}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:=localhost}:5432/${POSTGRES_DB:=feast}
+
 project: mlops_project
 registry: data/registry.db # Path to the Feast registry file, relative to feature_store/
 provider: local
@@ -6,26 +23,3 @@ online_store:
     connection_string: "4.154.210.230:30379"
 offline_store:
     type: file
-
-
-# project: mlops_project
-# registry: s3://my-feast-bucket/registry.db # <-- Registry now on S3
-# provider: aws                              # <-- Provider now AWS
-# online_store:
-#     type: redis
-#     host: 4.246.120.68
-#     port: 30800
-# offline_store:
-#     type: s3                               # <-- Offline store now S3
-#     s3_endpoint_override: null
-
-
-
-# project: mlops_project
-# registry: data/registry.db # Path to the Feast registry file, relative to feature_store/
-# provider: local
-# online_store:
-#     type: sqlite
-#     path: data/online_store.db
-# offline_store:
-#     type: file

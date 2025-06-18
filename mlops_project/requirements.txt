@@ -1,13 +1,22 @@
-pandas
-feast
-numpy
 scikit-learn
-fastparquet # pandas to support parquet
-mlflow
 flask
 flask-cors
 pydantic
-typing
-redis
-azure
 pandera[pandas]
+protobuf==4.25.3
+uvicorn==0.30.6
+feast==0.43.0
+feast[redis]
+mlflow==3.1.0
+kserve==0.15.2
+azure-identity
+azure-storage-blob
+
+# feast
+# feast[redis]
+# kserve
+# mlflow
+# azure-identity
+# azure-storage-blob
+# protobuf==5.29.0  # Downgraded to match Feast's generated code version
+# psycopg[binary]

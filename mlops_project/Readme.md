@@ -184,3 +184,4 @@ Example for local MLflow development url - # model_uri="../mlruns/0/<run-id>/art
 ### Kubernetes Job:
 
 src/ folder => data_engg_pipeline and model_pipeline
+
