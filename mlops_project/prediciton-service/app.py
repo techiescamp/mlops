@@ -24,6 +24,8 @@ FEAST_SERVER_URL = os.environ.get("FEAST_SERVER_URL", "http://localhost:5050") #
 KSERVE_URL = os.environ.get("KSERVE_URL", "http://localhost:8002/v1/models/mlops_employee_attrition:predict")
 MONITORING_URL = os.environ.get("MONITORING_URL", "http://localhost:8001")
 
+print(f"FEAST_SERVER_URL: {FEAST_SERVER_URL}")
+
 
 app = FastAPI()
 
