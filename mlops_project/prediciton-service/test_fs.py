@@ -3,8 +3,8 @@ import requests
 
 
 # FEAST_SERVER_URL = "http://localhost:5050"
-# FEAST_SERVER_URL = "http://4.154.210.230:30800"
-FEAST_SERVER_URL = "http://4.154.210.230:30379"
+FEAST_SERVER_URL = "http://4.154.210.230:30800"
+# FEAST_SERVER_URL = "http://4.154.210.230:30379"
 
 
 try:

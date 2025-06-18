@@ -28,5 +28,9 @@ def model_registry(model, X_train, metrics):
             input_example=X_train
         )
         # register model
+        mlflow.register_model(
+            model_uri=f"runs:/{run.info.run_id}/attrition_model_pipeline",
+            name="Employee Attrition Model"
+        )
         print(f"You can view the run details at: {run.info.run_id}")
 
