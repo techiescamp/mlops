@@ -5,7 +5,9 @@ on:
 
 jobs:
   test-job:
-    runs-on: arc-runner-set # or use 'ubuntu-latest' if not using a self-hosted runner
+    runs-on: arc-runner-set
+    container:
+      image: ubuntu:latest
     steps:
       - name: Test
         run: sleep 60
