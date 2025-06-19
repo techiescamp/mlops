@@ -1,0 +1,11 @@
+name: Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-job:
+    runs-on: arc-runner-set # or use 'ubuntu-latest' if not using a self-hosted runner
+    steps:
+      - name: Test
+        run: sleep 60
