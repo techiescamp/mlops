@@ -8,6 +8,7 @@ uvicorn==0.30.6
 feast==0.43.0
 feast[redis]
 mlflow==3.1.0
+psycopg
 # kserve==0.15.2
 # azure-identity
 # azure-storage-blob
