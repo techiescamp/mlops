@@ -7,7 +7,35 @@ jobs:
   test-job:
     runs-on: eks_runner
     container:
-      image: ubuntu:latest
+      image: aswinvj/mlflow-build-kit:1.0.0
     steps:
-      - name: Test
-        run: sleep 60
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run data engineering pipeline
+        run: python -m src.data_engg_pipeline
+        working-directory: ./mlops_project
+
+      - name: Feast apply
+        run: feast apply
+        working-directory: ./mlops_project/feature_store
+        env:
+          POSTGRES_USER: feast
+          POSTGRES_PASSWORD: feast
+          POSTGRES_HOST: postgres.feast.svc.cluster.local
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: feast
+          REDIS_HOST: redis.feast.svc.cluster.local
+          REDIS_PORT: 6379
+
+      - name: Feast materialize-incremental
+        run: feast materialize-incremental 2025-12-31T23:59:59
+        working-directory: ./mlops_project/feature_store
+        env:
+          POSTGRES_USER: feast
+          POSTGRES_PASSWORD: feast
+          POSTGRES_HOST: postgres.feast.svc.cluster.local
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: feast
+          REDIS_HOST: redis.feast.svc.cluster.local
+          REDIS_PORT: 6379
