@@ -5,7 +5,7 @@ on:
 
 jobs:
   test-job:
-    runs-on: arc-runner-set
+    runs-on: eks_runner
     container:
       image: ubuntu:latest
     steps:
