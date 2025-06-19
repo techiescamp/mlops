@@ -7,9 +7,9 @@ document.getElementById('prediction_form').addEventListener('submit', (e) => {
     })
     let keys = ['Age', 'Years at Company', 'Monthly Income', 'Number of Promotions', 'Company Tenure', 'Number of Dependents']
     keys.forEach(item => data[item] = Number(data[item]))
-    const newData = {...data, 'employee_id': 143}
-    console.log(newData)
-    console.log(PREDICTION_API_URL)
+    const newData = {...data, 'employee_id': 8410}
+    // console.log(newData)
+    // console.log(PREDICTION_API_URL)
 
     fetch(PREDICTION_API_URL, {
         method: 'POST',
@@ -21,9 +21,11 @@ document.getElementById('prediction_form').addEventListener('submit', (e) => {
         console.log(result)
         let response;
         if(result.prediction === 1) {
-            response = "Stayed"
+            response = "Left"
+        } else if(result.prediction === 0) {
+            response = "Stayed" 
         } else {
-            response = "Left" 
+            response = "undefined"
         }
         const showResult = document.getElementById('result')
         showResult.style.display = 'block'

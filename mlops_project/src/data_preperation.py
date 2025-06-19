@@ -1,11 +1,13 @@
 import pandas as pd
 import numpy as np
 import os
-import datetime
 from sklearn.preprocessing import OrdinalEncoder
 
-
-def prepare_data_for_feast(X, y, output_parquet_path):
+    
+def prepare_data_encoding(validated_employee_data: pd.DataFrame):
+    X = validated_employee_data.drop(['Employee ID', 'Attrition', 'Job Role', 'Distance from Home', 'Marital Status', 'Gender'], axis=1)
+    y = validated_employee_data['Attrition']
+    
     # 1. Ordinal Encoding for features
     columns_to_encode = ['Work-Life Balance', 'Job Satisfaction', 'Performance Rating', 'Education Level', 'Job Level', 'Company Size', 'Company Reputation', 'Employee Recognition']
     categories=[
@@ -22,11 +24,11 @@ def prepare_data_for_feast(X, y, output_parquet_path):
     # ensure columns exists before performing encoding !!!
     for col in columns_to_encode:
         if col not in X.columns:
-            print(f"⚠️ Warning: Column '{col}' not found in data. Skipping encoding for it.")
+            print(f"Warning: Column '{col}' not found in data. Skipping encoding for it.")
             columns_to_encode.remove(col)
 
     X[columns_to_encode] = oe.fit_transform(X[columns_to_encode]).astype('int')
-    print('✅ Ordinal Encoding is complete.')
+    print('Ordinal Encoding is complete.')
 
     # 2. boolean mapping for 'yes' / 'no' columns
     emp_bool_map = ['Overtime', 'Remote Work', 'Leadership Opportunities', 'Innovation Opportunities']
@@ -35,15 +37,15 @@ def prepare_data_for_feast(X, y, output_parquet_path):
             print(f"Warning: Column '{col}' not found for boolean mapping !!!")
         else:
             X[col] = X[col].map({'No': 0, 'Yes': 1})
-            print("✅ 'Boolean Mapping' is completed.")
+    print("'Boolean Mapping' is completed.")
     
     # 3. Feature Engg: Create 'Opportunities' feature
     if 'Leadership Opportunities' in X.columns and 'Innovation Opportunities' in X.columns:
         X['Opportunities'] = X['Leadership Opportunities'] + X['Innovation Opportunities']
         X = X.drop(columns=['Leadership Opportunities', 'Innovation Opportunities'])
     else:
-        print("⚠️ Warning: 'Leadership Opportunities' or 'Innovation Opportunities' not found. Skipping 'Opportunities' creation.")
-    print("✅ 'Opportunities' feature created.")
+        print("Warning: 'Leadership Opportunities' or 'Innovation Opportunities' not found. Skipping 'Opportunities' creation.")
+    print("'Opportunities' feature created.")
 
     # 4. Feature Engg: Define the function to map income ranges to ordinal values
     def map_monthly_income(income):
@@ -62,56 +64,22 @@ def prepare_data_for_feast(X, y, output_parquet_path):
 
     if 'Monthly Income' in X.columns:
         X['Monthly Income'] = X['Monthly Income'].apply(map_monthly_income)
-        print("✅ 'Monthly Income' mapping complete.")
+        print("'Monthly Income' mapping complete.")
     else:
-        print("⚠️ Warning: 'Monthly Income' column not found.")
+        print("Warning: 'Monthly Income' column not found.")
         
     # 5. Label encoding for target values
     y = y.map({'Stayed': 0, 'Left': 1})
-    print("✅ 'Attrition' label mapping complete.")
+    print("'Attrition' label mapping complete.")
 
     # combine features (X) and target (y) for feast
     final_df = pd.concat([X, y.rename('attrition_label')], axis=1)
-
-    # ensoure output_data directory exists !
-    output_dir = os.path.dirname(output_parquet_path)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-        print(f"🆕 Created Output Directory (parquet): {output_dir}")
+    return final_df
     
-    # save to parquet
-    final_df.to_parquet(output_parquet_path, index=False)
-
-    print("✅ Data preparation complete and saved successfully.")
-    print(f"😷 Final data columns: {final_df.columns.tolist()}")
-    print("column names: ", {final_df.shape})
-
-
 
 
 if __name__ == "__main__":
-    # find .csv files from folder
-    data_dir = os.path.dirname(__file__)  # C:../../mlops_project/src
-    train_path = os.path.join(data_dir, "..", 'raw_data', 'train.csv') # C:../../mlops_project/raw_data/train.csv
-    test_path = os.path.join(data_dir, "..", 'raw_data', 'test.csv')
-    output_parquet_path = os.path.join(data_dir, '..', 'feature_store/data', 'employee_preprocessed_data.parquet') 
+    print(" --- data preparation ---")
 
-    print(f"🔃 Loading data from {train_path} and {test_path}...")
-    try:
-        employee_train = pd.read_csv(train_path)
-        employee_test = pd.read_csv(test_path)
-    except FileNotFoundError as e:
-        print(f"❌ Error: One or both CSV files not found. Please ensure they are in the correct directory. {e}")
-
-    employee_data = pd.concat([employee_train, employee_test])
-    print(f"🔍 Combined data shape: {employee_data.shape}")
-
-    # create unique employee_id and timestamp for Feast
-    employee_data["employee_id"] = employee_data.index + 1
-    employee_data['event_timestamp'] = pd.to_datetime(datetime.datetime.now()) - pd.to_timedelta(employee_data.index, unit='D')
-    print("✅ Added 'employee_id' and 'event_timestamp' for feast")
-
-    X = employee_data.drop(['Employee ID', 'Attrition', 'Job Role', 'Distance from Home', 'Marital Status', 'Gender'], axis=1)
-    y = employee_data['Attrition']
-
-    prepare_data_for_feast(X, y, output_parquet_path)
+    
+    

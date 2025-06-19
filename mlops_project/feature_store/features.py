@@ -1,11 +1,10 @@
 # features.py
-from feast import Entity, FeatureView, Field, FileSource, ValueType
+from feast import Entity, FeatureView, Field, FileSource, ValueType, FeatureService
 from feast.types import Int64
 from datetime import timedelta
 
 # Define an entity for 'employee'
 employee = Entity(name="employee_id", value_type=ValueType.INT64, description="Employee ID")
-
 
 employee_preprocessed_source = FileSource(
     path="data/employee_preprocessed_data.parquet", # Path to the preprocessed Parquet file
@@ -39,12 +38,22 @@ employee_features_fv = FeatureView(
     source=employee_preprocessed_source,
 )
 
+# Define a FeatureService for your employee attrition model
+employee_attrition_fs = FeatureService(
+    name="employee_attrition_features",
+    features=[
+        employee_features_fv[["Age", "Company Reputation", "Company Size", "Company Tenure",
+                              "Education Level", "Employee Recognition", "Job Level",
+                              "Job Satisfaction", "Monthly Income", "Number of Dependents",
+                              "Number of Promotions", "Opportunities", "Overtime",
+                              "Performance Rating", "Remote Work", "Work-Life Balance",
+                              "Years at Company"]]
+    ]
+    # Note: 'attrition_label' is not included here as it's typically the target, not a feature for inference
+)
+
 #  testing or logging the feature values
 feature_count = len(employee_features_fv.schema)
-print('✅ total features in feast: ', feature_count)
+print('total features in feast: ', feature_count)
 
-for fv in employee_features_fv.schema:
-    print(f'{fv.name}\n')
-
-
-# 18 feature names
+# 18 feature namesclear
