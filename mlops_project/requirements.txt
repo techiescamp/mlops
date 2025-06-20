@@ -20,4 +20,4 @@ psycopg[binary]
 # azure-identity
 # azure-storage-blob
 # protobuf==5.29.0  # Downgraded to match Feast's generated code version
-psycopg[binary]
+# psycopg[binary]

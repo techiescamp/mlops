@@ -39,3 +39,8 @@ jobs:
           POSTGRES_DB: feast
           REDIS_HOST: redis.feast.svc.cluster.local
           REDIS_PORT: 6379
+      - name: Model training
+        run: python -m src.model_pipeline
+        working-directory: ./mlops_project
+        env:
+          MLFLOW_TRACKING_URI: http://mlflow.mlflow.svc.cluster.local:5000
