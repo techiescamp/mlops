@@ -43,6 +43,8 @@ jobs:
         run: python -m src.model_pipeline
         working-directory: ./mlops_project
         env:
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+          AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
           MLFLOW_TRACKING_URI: http://mlflow.mlflow.svc.cluster.local:5000
           POSTGRES_USER: feast
           POSTGRES_PASSWORD: feast
