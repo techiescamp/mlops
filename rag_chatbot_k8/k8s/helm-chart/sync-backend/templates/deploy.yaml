@@ -20,6 +20,8 @@ spec:
           containers:
             - name: sync-backend
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              resources:
+                {{- toYaml .Values.resources | nindent 16 }}
               envFrom:
                 - configMapRef:
                     name: rag-{{ .Release.Name }}-configmap

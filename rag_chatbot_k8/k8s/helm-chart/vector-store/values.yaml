@@ -10,13 +10,35 @@ service:
   port: 8001
 
 config:
-  azureEndpoint: <open-ai-endpoint>
-  azureEmbeddingDeployment: text-embedding-3-small
-  azureEmbeddingVersion: 2024-12-01-preview
+  azureOpenAIEndpoint: <open-ai-endpoint>
+  azureEmbeddingModel: text-embedding-3-small
+  azureEmbeddingModelVersion: 2024-12-01-preview
 
 secret:
-  azureApiKey: "<open-ai-api-key>"
+  azureOpenAIApiKey: "<open-ai-api-key>"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
 volume:
   size: 1Gi
   storageClassName: default
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8001
+  initialDelaySeconds: 15
+  periodSeconds: 20
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8001
+  initialDelaySeconds: 5
+  periodSeconds: 10
