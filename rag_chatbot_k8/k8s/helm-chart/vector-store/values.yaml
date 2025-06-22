@@ -42,3 +42,8 @@ readinessProbe:
     port: 8001
   initialDelaySeconds: 5
   periodSeconds: 10
+
+networkPolicy:
+  enabled: true
+  allowedNamespaces:
+    - rag-backend

@@ -39,3 +39,9 @@ readinessProbe:
     port: 8000
   initialDelaySeconds: 5
   periodSeconds: 10
+
+networkPolicy:
+  enabled: true
+  allowedNamespaces:
+    - rag-frontend
+    - rag-storage
