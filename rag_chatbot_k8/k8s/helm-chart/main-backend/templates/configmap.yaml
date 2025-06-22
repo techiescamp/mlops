@@ -4,9 +4,9 @@ metadata:
     name: rag-{{ .Release.Name }}-configmap
     namespace: {{ .Release.Namespace }}
 data:
-    AZURE_ENDPOINT: {{ .Values.config.azureEndpoint }}
-    AZURE_CHAT_DEPLOYMENT: {{ .Values.config.azureChatDeployment }}
-    AZURE_OPENAI_API_VERSION: {{ .Values.config.openaiApiVersion }}
+    AZURE_ENDPOINT: {{ .Values.config.azureOpenAIEndpoint }}
+    AZURE_CHAT_DEPLOYMENT: {{ .Values.config.azureOpenAIllmModel }}
+    AZURE_OPENAI_API_VERSION: {{ .Values.config.azureOpenAIllmModelVersion }}
     VECTOR_DB_URL: {{ .Values.config.vectorStoreUrl }}
     HOST: "0.0.0.0"
     PORT: "8000"

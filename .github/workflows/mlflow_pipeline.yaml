@@ -7,7 +7,7 @@ jobs:
   test-job:
     runs-on: eks_runner
     container:
-      image: aswinvj/mlflow-build-kit:3.0.0
+      image: aswinvj/mlflow-build-kit:4.0.0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -32,6 +32,19 @@ jobs:
         run: feast materialize-incremental 2025-12-31T23:59:59
         working-directory: ./mlops_project/feature_store
         env:
+          POSTGRES_USER: feast
+          POSTGRES_PASSWORD: feast
+          POSTGRES_HOST: postgres.feast.svc.cluster.local
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: feast
+          REDIS_HOST: redis.feast.svc.cluster.local
+          REDIS_PORT: 6379
+      - name: Model training
+        run: python -m src.model_pipeline
+        working-directory: ./mlops_project
+        env:
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          MLFLOW_TRACKING_URI: http://mlflow.mlflow.svc.cluster.local:5000
           POSTGRES_USER: feast
           POSTGRES_PASSWORD: feast
           POSTGRES_HOST: postgres.feast.svc.cluster.local
