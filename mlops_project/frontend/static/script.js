@@ -11,7 +11,7 @@ document.getElementById('prediction_form').addEventListener('submit', (e) => {
     // console.log(newData)
     // console.log(PREDICTION_API_URL)
 
-    fetch(PREDICTION_API_URL, {
+    fetch('/predict', {
         method: 'POST',
         body: JSON.stringify({ data: newData }),
         headers: { 'Content-Type': 'application/json' }
