@@ -42,7 +42,6 @@ def prepare_data_for_feast(final_df: pd.DataFrame, raw_data: pd.DataFrame, outpu
     print("Column names: ", {final_df.shape})
 
 
-
 def get_training_data_from_feast():
     script_dir = os.path.dirname(__file__)
     feast_repo_path = os.path.join(script_dir, "../feature_store")
@@ -52,7 +51,6 @@ def get_training_data_from_feast():
         field.name for field in employee_features_fv.schema
         if field.name not in ["employee_id", "attrition_label", "event_timestamp", "created_timestamp"]
     ])
-
 
     fs = FeatureStore(repo_path=feast_repo_path)
     preprocessed_df_path = os.path.join(script_dir, '../feature_store/data', 'employee_preprocessed_data.parquet')

@@ -13,7 +13,8 @@ CORS(app)
 @app.route("/", methods=['GET'])
 def index():
     prediction_url = os.environ["PREDICTION_URL"]
+    print(prediction_url)
     return render_template('index.html', prediction_url=prediction_url)
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=3000)
+    app.run(debug=False, host="0.0.0.0", port=3000)
