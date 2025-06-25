@@ -61,12 +61,30 @@ def prepare_data_encoding(validated_employee_data: pd.DataFrame):
             return 4
         else:
             return -1  
+        
+    def age_mapping(age):
+        if age < 25:
+            return 0
+        elif 25 <= age < 35:
+            return 1
+        elif 35 <= age < 45:
+            return 2
+        elif 45 <= age < 55:
+            return 3
+        else:
+            return 4
 
     if 'Monthly Income' in X.columns:
         X['Monthly Income'] = X['Monthly Income'].apply(map_monthly_income)
         print("'Monthly Income' mapping complete.")
     else:
         print("Warning: 'Monthly Income' column not found.")
+
+    if 'Age' in X.columns:
+        X['Age'] = X['Age'].apply(age_mapping)
+        print("'Age' mapping complete.")
+    else:
+        print("Warning: 'Age' column not found.")
         
     # 5. Label encoding for target values
     y = y.map({'Stayed': 0, 'Left': 1})

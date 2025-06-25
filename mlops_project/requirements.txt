@@ -11,6 +11,9 @@ mlflow==3.1.0
 kserve==0.15.2
 azure-identity
 azure-storage-blob
+psutil
+pynvml
+evidently
 
 # feast
 # feast[redis]
