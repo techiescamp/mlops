@@ -300,6 +300,19 @@ or
 uv run main.py (preferred)
 ```
 
+### Prompt
+
+I have Kubernetes manifest files located in a folder named manifest. I need you to convert these manifests into a Helm chart, placing the chart inside a folder named helm-chart, which is in the same directory as the manifest folder.
+
+While converting, please also do the following:
+
+Add resource requests and limits for CPU and memory
+
+Define proper readiness and liveness probes
+
+Include a basic NetworkPolicy that only allows traffic from within the namespace
+
+Make sure the Helm chart follows a standard structure templates/, values.yaml, Chart.yaml, etc.
 
 ### Contribution
 -----
