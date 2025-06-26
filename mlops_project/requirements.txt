@@ -14,7 +14,7 @@ azure-storage-blob
 psutil
 pynvml
 evidently
-
+xgboost
 # kserve==0.15.2
 # feast
 # feast[redis]
