@@ -11,10 +11,27 @@ online_store:
     type: redis
     connection_string: "${REDIS_HOST:=localhost}:${REDIS_PORT:=6379}"
 offline_store:
-    type: file   
+    type: file
 
 entity_key_serialization_version: 2
                            
+
+# project: mlops_project
+# registry: 
+#     registry_type: sql
+#     path: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:30032/${POSTGRES_DB}
+#     cache_ttl_seconds: 60
+#     sqlalchemy_config_kwargs:
+#         echo: false
+#         pool_pre_ping: true 
+# provider: local                           
+# online_store:
+#     type: redis
+#     connection_string: "${REDIS_HOST:=localhost}:${REDIS_PORT:=6379}"
+# offline_store:
+#     type: file   
+
+# entity_key_serialization_version: 2
 
 # path: postgresql+psycopg://${POSTGRES_USER:=postgres}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:=localhost}:5432/${POSTGRES_DB:=feast}
 
@@ -26,3 +43,9 @@ entity_key_serialization_version: 2
 #     connection_string: "4.154.210.230:30379"
 # offline_store:
 #     type: file
+
+
+
+# offline_store:
+#     type: postgres
+#     connection_string: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:30032/${POSTGRES_DB}
