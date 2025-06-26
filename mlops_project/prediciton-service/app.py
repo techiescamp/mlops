@@ -18,8 +18,8 @@ load_dotenv()
 FEAST_SERVER_URL = os.environ.get("FEAST_SERVER_URL", "http://localhost:5050") # Or the load balancer URL if on K8s
 KSERVE_URL = os.environ.get("KSERVE_URL", "http://localhost:8002/v1/models/mlops_employee_attrition:predict")
 MONITORING_URL = os.environ.get("MONITORING_URL", "http://localhost:8001")
-INPUT_FILE_PATH = "../raw_data/input_data.csv"
-PREDICTION_OUTPUT_FILE = "../raw_data/prediction_output.csv"
+INPUT_FILE_PATH = "input_data.csv"
+PREDICTION_OUTPUT_FILE = "prediction_output.csv"
 
 print(f"FEAST_SERVER_URL: {FEAST_SERVER_URL}")
 

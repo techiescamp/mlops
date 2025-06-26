@@ -7,7 +7,7 @@ jobs:
   test-job:
     runs-on: eks_runner
     container:
-      image: aswinvj/mlflow-build-kit:4.0.0
+      image: techiescamp/mlops-pipeline-runner:1.0.0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
