@@ -50,3 +50,5 @@ jobs:
           POSTGRES_HOST: postgres.feast.svc.cluster.local
           POSTGRES_PORT: 5432
           POSTGRES_DB: feast
+          REDIS_HOST: redis.feast.svc.cluster.local
+          REDIS_PORT: 6379
