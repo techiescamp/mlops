@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-job:
+  run-mlflow-pipeline:
     runs-on: eks_runner
     container:
       image: techiescamp/mlops-pipeline-runner:3.0.0
