@@ -45,8 +45,8 @@ jobs:
         env:
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           MLFLOW_TRACKING_URI: http://mlflow.mlflow.svc.cluster.local:5000
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: admin@123
-          POSTGRES_HOST: mlflow-postgresql.mlflow.svc.cluster.local
+          POSTGRES_USER: feast
+          POSTGRES_PASSWORD: feast
+          POSTGRES_HOST: postgres.feast.svc.cluster.local
           POSTGRES_PORT: 5432
-          POSTGRES_DB: mlflow
+          POSTGRES_DB: feast
