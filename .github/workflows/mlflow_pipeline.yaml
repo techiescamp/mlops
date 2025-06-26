@@ -7,7 +7,7 @@ jobs:
   run-mlflow-pipeline:
     runs-on: eks_runner
     container:
-      image: techiescamp/mlops-pipeline-runner:3.0.0
+      image: techiescamp/mlops-pipeline-runner:4.0.0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -16,37 +16,38 @@ jobs:
         run: python -m src.data_engg_pipeline
         working-directory: ./mlops_project
 
-      - name: Upload features to Feast
+      - name: Initialize Feast Feature Store
         run: feast apply
         working-directory: ./mlops_project/feature_store
         env:
-          POSTGRES_USER: feast
-          POSTGRES_PASSWORD: feast
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_HOST: postgres.feast.svc.cluster.local
           POSTGRES_PORT: 5432
-          POSTGRES_DB: feast
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           REDIS_HOST: redis.feast.svc.cluster.local
           REDIS_PORT: 6379
 
-      - name: Materialize Latest Feature Data to Online Store
+      - name: Upload features to Feast store
         run: feast materialize-incremental 2025-12-31T23:59:59
         working-directory: ./mlops_project/feature_store
         env:
-          POSTGRES_USER: feast
-          POSTGRES_PASSWORD: feast
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_HOST: postgres.feast.svc.cluster.local
           POSTGRES_PORT: 5432
-          POSTGRES_DB: feast
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           REDIS_HOST: redis.feast.svc.cluster.local
           REDIS_PORT: 6379
+
       - name: Run Model Training Pipeline
         run: python -m src.model_pipeline
         working-directory: ./mlops_project
         env:
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
           MLFLOW_TRACKING_URI: http://mlflow.mlflow.svc.cluster.local:5000
-          POSTGRES_USER: feast
-          POSTGRES_PASSWORD: feast
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_HOST: postgres.feast.svc.cluster.local
           POSTGRES_PORT: 5432
-          POSTGRES_DB: feast
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
