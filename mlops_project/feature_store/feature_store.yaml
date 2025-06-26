@@ -11,14 +11,10 @@ online_store:
     type: redis
     connection_string: "${REDIS_HOST:=localhost}:${REDIS_PORT:=6379}"
 offline_store:
-    type: postgres
-    host: ${POSTGRES_HOST}
-    port: ${POSTGRES_PORT}
-    database: ${POSTGRES_DB}
-    db_schema: public
-    user: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    type: file
+
 entity_key_serialization_version: 2
+                           
 
 # project: mlops_project
 # registry: 
