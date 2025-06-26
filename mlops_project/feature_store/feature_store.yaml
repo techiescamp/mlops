@@ -11,10 +11,8 @@ online_store:
     type: redis
     connection_string: "${REDIS_HOST:=localhost}:${REDIS_PORT:=6379}"
 offline_store:
-    type: file
-
+    type: duckdb
 entity_key_serialization_version: 2
-                           
 
 # project: mlops_project
 # registry: 

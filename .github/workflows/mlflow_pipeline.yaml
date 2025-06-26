@@ -1,4 +1,4 @@
-name: Test
+name: MLflow Pipeline
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ jobs:
         run: python -m src.data_engg_pipeline
         working-directory: ./mlops_project
 
-      - name: Feast apply
+      - name: Upload features to Feast
         run: feast apply
         working-directory: ./mlops_project/feature_store
         env:
@@ -28,7 +28,7 @@ jobs:
           REDIS_HOST: redis.feast.svc.cluster.local
           REDIS_PORT: 6379
 
-      - name: Feast materialize-incremental
+      - name: Materialize Latest Feature Data to Online Store
         run: feast materialize-incremental 2025-12-31T23:59:59
         working-directory: ./mlops_project/feature_store
         env:
@@ -39,7 +39,7 @@ jobs:
           POSTGRES_DB: feast
           REDIS_HOST: redis.feast.svc.cluster.local
           REDIS_PORT: 6379
-      - name: Model training
+      - name: Run Model Training Pipeline
         run: python -m src.model_pipeline
         working-directory: ./mlops_project
         env:
