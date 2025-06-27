@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee-attrition-backend
+  namespace: kserve
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: employee-attrition-backend
+  template:
+    metadata:
+      labels:
+        app: employee-attrition-backend
+    spec:
+      containers:
+        - name: backend
+          image: techiescamp/feast-transformer:5.0.0
+          ports:
+            - containerPort: 8000
+          env:
+            - name: FEAST_SERVER_URL
+              value: "http://feast-example-online.feast.svc.cluster.local:80"
+            - name: KSERVE_URL
+              value: "http://mlops-employee-attrition-predictor.kserve.svc.cluster.local:80/v1/models/mlops_employee_attrition:predict"

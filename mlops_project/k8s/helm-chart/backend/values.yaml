@@ -1,0 +1,15 @@
+image: techiescamp/feast-transformer:5.0.0
+replicaCount: 1
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+service:
+  type: ClusterIP
+  port: 8000
+env:
+  FEAST_SERVER_URL: "http://feast-example-online.feast.svc.cluster.local:80"
+  KSERVE_URL: "http://mlops-employee-attrition-predictor.kserve.svc.cluster.local:80/v1/models/mlops_employee_attrition:predict"

@@ -13,8 +13,8 @@ azure-identity
 azure-storage-blob
 psutil
 pynvml
-evidently
-
+xgboost
+# evidently
 # kserve==0.15.2
 # feast
 # feast[redis]
