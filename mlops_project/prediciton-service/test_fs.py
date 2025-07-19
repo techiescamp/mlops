@@ -3,6 +3,7 @@ import requests
 
 
 FEAST_SERVER_URL = "http://localhost:5050"
+# FEAST_SERVER_URL = "http://4.154.210.230:30800"
 
 
 try:
@@ -18,7 +19,8 @@ try:
             data=json.dumps(payload),
             headers=headers
         )
-    feature_names = response.json().get('metadata', {}).get('feature_names', [])
+    # feature_names = response.json().get('metadata', {}).get('feature_names', [])
+    feature_names = response.json()
     print(f"Feature_name: {feature_names}")
 except Exception as e:
      print(f"error: {e}")

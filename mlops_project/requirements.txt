@@ -1,13 +1,11 @@
-pandas
-feast
-numpy
 scikit-learn
-fastparquet # pandas to support parquet
-mlflow
 flask
 flask-cors
 pydantic
-typing
-redis
-azure
 pandera[pandas]
+
+
+# mlflow
+# azure-identity
+# azure-storage-blob
+# protobuf==5.29.0  # Downgraded to match Feast's generated code version
