@@ -64,11 +64,7 @@ if __name__ == "__main__":
     print(f"mlflow-url in kserve: {os.environ.get("MLFLOW_ARTIFACT_URL")}")
     model = EmployeeAttritionPrediction(
         name="mlops_employee_attrition",
-<<<<<<< HEAD
-        model_uri=os.environ.get("MLFLOW_ARTIFACT_URL", "../mlruns/0/a7959d8ce50740c48d578ec2fca7adb3/artifacts/attrition_model_pipeline")        # feast_repo_path="../feature_store"
-=======
         model_uri=model_uri
->>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57
     )
     model.load()
     server.start(models=[model])
