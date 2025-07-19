@@ -1,8 +1,0 @@
-langchain-openai
-langchain_community
-langchain_core
-fastapi
-uvicorn
-dotenv
-scikit-learn
-requests

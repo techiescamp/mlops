@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sync-backend
+spec:
+  schedule: "0 0 * * *"
+  timeZone: Asia/Kolkata
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: sync-backend
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: sync-backend
+              image: techiescamp/rag-sync-backend:8.0.0
+              envFrom:
+                - configMapRef:
+                    name: sync-env
+              env:
+                - name: AZURE_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: sync-secret
+                      key: AZURE_API_KEY

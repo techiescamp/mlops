@@ -1,0 +1,73 @@
+project: mlops_project
+registry: 
+    registry_type: sql
+<<<<<<< HEAD
+    path: postgresql+psycopg://feast:feast@4.154.210.230:30032/feast
+=======
+    path: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+>>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57
+    cache_ttl_seconds: 60
+    sqlalchemy_config_kwargs:
+        echo: false
+        pool_pre_ping: true 
+provider: local                           
+online_store:
+    type: redis
+<<<<<<< HEAD
+    host: 4.246.120.68
+    port: 30800
+=======
+    connection_string: "${REDIS_HOST:=localhost}:${REDIS_PORT:=6379}"
+>>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57
+offline_store:
+    type: file                              
+
+
+# path: postgresql+psycopg://${POSTGRES_USER:=postgres}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:=localhost}:5432/${POSTGRES_DB:=feast}
+
+entity_key_serialization_version: 2
+                           
+
+# project: mlops_project
+<<<<<<< HEAD
+# registry: data/registry.db # Path to the Feast registry file, relative to feature_store/
+# provider: local
+# online_store:
+#     type: redis
+#     connection_string: "4.154.210.230:30379"
+# offline_store:
+#     type: file
+=======
+# registry: 
+#     registry_type: sql
+#     path: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:30032/${POSTGRES_DB}
+#     cache_ttl_seconds: 60
+#     sqlalchemy_config_kwargs:
+#         echo: false
+#         pool_pre_ping: true 
+# provider: local                           
+# online_store:
+#     type: redis
+#     connection_string: "${REDIS_HOST:=localhost}:${REDIS_PORT:=6379}"
+# offline_store:
+#     type: file   
+
+# entity_key_serialization_version: 2
+>>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57
+
+# path: postgresql+psycopg://${POSTGRES_USER:=postgres}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:=localhost}:5432/${POSTGRES_DB:=feast}
+
+# project: mlops_project
+# registry: data/registry.db # Path to the Feast registry file, relative to feature_store/
+# provider: local
+# online_store:
+#     type: redis
+#     connection_string: "4.154.210.230:30379"
+# offline_store:
+#     type: file
+
+
+
+# offline_store:
+#     type: postgres
+#     connection_string: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:30032/${POSTGRES_DB}
