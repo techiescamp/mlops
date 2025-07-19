@@ -62,6 +62,7 @@ if __name__ == "__main__":
 
     server = ModelServer(http_port=8002)
     print(f"mlflow-url in kserve: {os.environ.get("MLFLOW_ARTIFACT_URL")}")
+
     model = EmployeeAttritionPrediction(
         name="mlops_employee_attrition",
         model_uri=model_uri
