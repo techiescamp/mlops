@@ -16,6 +16,10 @@ FEAST_SERVER_HOST = "localhost"
 FEAST_SERVER_PORT= 5050
 
 
+# FEAST_SERVER_HOST = "localhost"
+# FEAST_SERVER_PORT= 5050
+
+
 def main():
     store = FeatureStore(repo_path=".")
     # Apply entities, feature views, and feature services

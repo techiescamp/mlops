@@ -2,8 +2,14 @@ import json
 import requests
 
 
+<<<<<<< HEAD
 FEAST_SERVER_URL = "http://localhost:5050"
 # FEAST_SERVER_URL = "http://4.154.210.230:30800"
+=======
+# FEAST_SERVER_URL = "http://localhost:5050"
+FEAST_SERVER_URL = "http://4.154.210.230:30800"
+
+>>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57
 
 
 try:

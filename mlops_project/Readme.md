@@ -112,7 +112,8 @@ mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./
 Since it is authenticated with Azure, have to login to azure-cli 
 
 ```bash
-pip install azure
+pip install azure-identity
+pip install azure-storage-blob
 ```
 
 - Run the `$env` to authenticate azure.
@@ -160,3 +161,23 @@ python app.py
 cd frontend  
 python app.py
 ```
+<<<<<<< HEAD
+=======
+
+# ------------------------------------------------------
+
+Example for local MLflow development url - # model_uri="../mlruns/0/<run-id>/artifacts/attrition_model_pipeline",
+
+
+### Services Are:
+
+1. MLflow for Model Registry 
+2. KServe 
+3. Feast 
+4. Postgres for offline store
+5. Redis DB for Online Store
+6. Prediction-Backend 
+7. Frontend 
+
+
+>>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57

@@ -11,3 +11,4 @@ __pycache__
 */__pycache__
 raw_data/employee_attrition_data.csv
 monitoring/logs
+*.txt

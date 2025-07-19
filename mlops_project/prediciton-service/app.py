@@ -5,17 +5,12 @@ import uvicorn
 import requests
 import pandas as pd
 import time
-
-# from feast import FeatureStore
-# from feature_store.features import employee_features_fv
-
 from sklearn.preprocessing import OrdinalEncoder
 from pydantic import BaseModel, Field
 from typing import Any, Dict, Optional
 import os
 from dotenv import load_dotenv
 
-# from monitoring.logger import log_metrics
 
 
 load_dotenv()
@@ -23,6 +18,10 @@ load_dotenv()
 FEAST_SERVER_URL = os.environ.get("FEAST_SERVER_URL", "http://localhost:5050") # Or the load balancer URL if on K8s
 KSERVE_URL = os.environ.get("KSERVE_URL", "http://localhost:8002/v1/models/mlops_employee_attrition:predict")
 MONITORING_URL = os.environ.get("MONITORING_URL", "http://localhost:8001")
+INPUT_FILE_PATH = "../raw_data/input_data.csv"
+PREDICTION_OUTPUT_FILE = "../raw_data/prediction_output.csv"
+
+print(f"FEAST_SERVER_URL: {FEAST_SERVER_URL}")
 
 print(f"FEAST_SERVER_URL: {FEAST_SERVER_URL}")
 
@@ -97,8 +96,23 @@ def preprocess_input(data: dict):
         elif income >= 50001: return 4
         else: return -1
 
+    def age_mapping(age):
+        if age < 25:
+            return 0
+        elif 25 <= age < 35:
+            return 1
+        elif 35 <= age < 45:
+            return 2
+        elif 45 <= age < 55:
+            return 3
+        else:
+            return 4
+
     if 'Monthly Income' in df:
         df['Monthly Income'] = df['Monthly Income'].apply(map_income)
+
+    if 'Age' in df:
+        df['Age'] = df['Age'].apply(age_mapping)
 
     # Apply Ordinal Encoding
     for col in encoder_columns:
@@ -144,6 +158,27 @@ def log_metrics_service(data: dict):
     except requests.exceptions.RequestException as e:
         print(f"Error sending metrics to monitoring service: {e}")
 
+def save_input_data(data: dict):
+    # save new data in csv file
+    if os.path.exists(INPUT_FILE_PATH):
+        existing_data = pd.read_csv(INPUT_FILE_PATH)
+        updated = pd.concat([existing_data, pd.DataFrame([data])], ignore_index=True)
+    else:
+        updated = pd.DataFrame([data])
+    updated.to_csv(INPUT_FILE_PATH, index=False)
+    print("New Data is saved !!!")
+
+def save_prediction_output(data: dict):
+    print(data)
+    prediction_df = pd.DataFrame([data])
+    
+    if os.path.exists(PREDICTION_OUTPUT_FILE):            
+        existing_data = pd.read_csv(PREDICTION_OUTPUT_FILE)
+        updated = pd.concat([existing_data, prediction_df], ignore_index=True)
+    else:
+        updated = prediction_df
+    updated.to_csv(PREDICTION_OUTPUT_FILE, index=False)
+    print("New Output Data is saved !!!")
 
 
 class FormData(BaseModel):
@@ -162,7 +197,9 @@ async def predict(payload: FormData):
         print(f"{payload}")
 
         preprocessed_input_data = preprocess_input(payload.data)
-        print(f"✅Transformed Input: ", preprocessed_input_data.columns)
+        print("✅Transformed Input: ", preprocessed_input_data.columns)
+
+        save_input_data(preprocessed_input_data.to_dict(orient="records")[0])  # Save the first record for simplicity
 
         FINAL_MODEL_FEATURE_ORDER = get_employee_features_via_server(payload.data['employee_id'])
         final_input = preprocessed_input_data.reindex(columns=FINAL_MODEL_FEATURE_ORDER, fill_value=0)
@@ -171,21 +208,37 @@ async def predict(payload: FormData):
         if final_input is None:
             status = "input_error"
             print(f"Feast service did not find features: {final_input}")
-            return {"error": "Feast service did not find features: {final_input}."}
+            return {"error": f"Feast service did not find features: {final_input}."}
 
         print(f"Final input DataFrame shape for KServe: {final_input.shape}")
-        print(f"Final input DataFrame columns for KServe: {final_input.columns.tolist()}")
+        # print(f"Final input DataFrame columns for KServe: {final_input.columns.tolist()}")
 
         # Send to KServe model running locally
+        print(KSERVE_URL)
         response = requests.post(KSERVE_URL, json={"instances": final_input.to_dict(orient="records")})
-
-
         response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
         
         print('✅😷 result: ', response.json())
-        result = response.json()
-        prediction_output = result["predictions"][0]
-        return {"prediction": result["predictions"][0]}
+        prediction_result = response.json()["predictions"][0]
+
+        result = response.json()["prediction_proba"]
+        prediction_output = "High" if result >= 0.7 else "Medium" if result >= 0.4 else "Low"
+        if prediction_output == "High":
+            recommendation = "Schedule retention interview."
+        elif prediction_output == "Medium":
+            recommendation = "Monitor employee engagement."
+        else:
+            recommendation = "No immediate action needed."
+
+        payload = {
+            "attrition_label": prediction_result,
+            "prediction": round(result, 3),
+            "risk_level": prediction_output,
+            "recommendation": recommendation
+        }
+        save_prediction_output(payload)  # Save the prediction output
+
+        return payload
     
     except requests.exceptions.RequestException as e:
         status = "kserve_error"
@@ -209,3 +262,4 @@ async def predict(payload: FormData):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+    # uvicorn.run(app, host="4.154.210.230", port=31013)

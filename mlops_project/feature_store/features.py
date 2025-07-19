@@ -6,7 +6,6 @@ from datetime import timedelta
 # Define an entity for 'employee'
 employee = Entity(name="employee_id", value_type=ValueType.INT64, description="Employee ID")
 
-
 employee_preprocessed_source = FileSource(
     path="data/employee_preprocessed_data.parquet", # Path to the preprocessed Parquet file
     timestamp_field="event_timestamp", # Column in your data indicating when the event occurred
