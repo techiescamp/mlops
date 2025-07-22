@@ -9,8 +9,12 @@ from features import employee, employee_features_fv, employee_attrition_fs
 
 load_dotenv()
 
-FEAST_SERVER_HOST = os.environ.get("FEAST_SERVER_HOST", "localhost")
-FEAST_SERVER_PORT= int(os.environ.get("FEAST_SERVER_PORT", "5050"))
+# FEAST_SERVER_HOST = os.environ.get("FEAST_SERVER_HOST", "localhost")
+# FEAST_SERVER_PORT= int(os.environ.get("FEAST_SERVER_PORT", "5050"))
+
+FEAST_SERVER_HOST = "localhost"
+FEAST_SERVER_PORT= 5050
+
 
 # FEAST_SERVER_HOST = "localhost"
 # FEAST_SERVER_PORT= 5050

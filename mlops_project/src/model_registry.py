@@ -103,6 +103,10 @@ def model_registry(name, model, X_train, y_pred, metrics, prediction_metrics, sy
             signature=infer_signature(X_train, y_pred), # mlflow.models.signature.
             input_example=X_train.iloc[[0]] # first row as example input
         )
+<<<<<<< HEAD
+        # register model
+        print(f"You can view the run details at: {run.info.run_id}")
+=======
         # set tags
         mlflow.set_tags({
             "model_type": model.named_steps['classifier'].__class__.__name__,
@@ -112,4 +116,5 @@ def model_registry(name, model, X_train, y_pred, metrics, prediction_metrics, sy
         })
         print(f"Model {name} registered successfully with run ID: {run.info.run_id}")
 
+>>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57
 

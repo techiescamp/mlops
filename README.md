@@ -42,7 +42,18 @@ This repository includes multiple MLOps projects, each focusing on different asp
 
     - Deployed via `React` (frontend) and `Node.js,Express.js` (backend) for seamless user experience.
 
-### **3. RAG project**
+
+### **3. Fine-Tuning using Azure OpenAI model**
+Fine-tuning is the process of training a pre-trained model with our own custom dataset so that model gives context-aware response and avoid hallucinations.        
+
+    - Preparing and uploading dataset into Azure
+    - Training the model
+    - Tracking events and checkpoints of model
+    - Continue fine-tuning with the previously trained model
+    - Deploy and test the model
+
+
+### **4. RAG project**
 The Retrieval-Augmented Generation (RAG) workflow enhances efficiency by dynamically fetching relevant data from a knowledge base and integrating it with a language model to produce precise, context-aware responses, eliminating the need for extensive retraining.
 
     - Developed DocuMancer AI, utilizing the RAG workflow to retrieve content from GitHub .md files.
@@ -53,7 +64,7 @@ The Retrieval-Augmented Generation (RAG) workflow enhances efficiency by dynamic
 
 **Prerequisites**
 
-    - Python 3.x
+    - Python +3.10
     - Docker & Kubernetes (Optional for Deployment)
 
 **Steps**
@@ -76,15 +87,15 @@ The Retrieval-Augmented Generation (RAG) workflow enhances efficiency by dynamic
     pip install -r requirements.txt
     ```
 
-    Go to directory on which project you needed and start working on it.
+    Go to the project directory of your choice and start working on it.
 
 
 ## Future Enhancements
-    - Automated ML Pipelines using DVC & MLflow.
-    - Continuous Integration & Deployment (CI/CD) with GitHub Actions.
-    - Model Versioning and tracking experiments.
-    - Cloud Deployment with Docker & Kubernetes.
-    - Monitoring & Logging with Prometheus & Grafana.
+- Automated ML Pipelines using DVC & MLflow.
+- Continuous Integration & Deployment (CI/CD) with GitHub Actions.
+- Model Versioning and tracking experiments.
+- Cloud Deployment with Docker & Kubernetes.
+- Monitoring & Logging with Prometheus & Grafana.
 
 
 ## Contribution
@@ -93,10 +104,5 @@ We welcome contributions from the security community. Please read our [Contribut
 
 ## License
 
-This project is open-source and available under the ![MIT License](./LICENCE).
+This project is open-source and available under the [MIT License](./LICENCE).
 [&copy;2025 www.techiescamp.com/](www.techiescamp.com/)
-git checkout -b techiescamp-develop main
-git pull https://github.com/techiescamp/mlops.git develop
-
-
-git checkout main

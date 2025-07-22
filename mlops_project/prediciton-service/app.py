@@ -23,6 +23,8 @@ PREDICTION_OUTPUT_FILE = "prediction_output.csv"
 
 print(f"FEAST_SERVER_URL: {FEAST_SERVER_URL}")
 
+print(f"FEAST_SERVER_URL: {FEAST_SERVER_URL}")
+
 
 app = FastAPI()
 

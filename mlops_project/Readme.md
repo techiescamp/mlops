@@ -161,6 +161,8 @@ python app.py
 cd frontend  
 python app.py
 ```
+<<<<<<< HEAD
+=======
 
 # ------------------------------------------------------
 
@@ -178,3 +180,4 @@ Example for local MLflow development url - # model_uri="../mlruns/0/<run-id>/art
 7. Frontend 
 
 
+>>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57
