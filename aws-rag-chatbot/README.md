@@ -2,6 +2,28 @@
 
 A production-ready Retrieval-Augmented Generation (RAG) chatbot leveraging AWS Bedrock for LLMs and Amazon S3 Vector as a scalable vector store. This project enables enterprise-grade, context-aware conversational AI over your private documents.
 
+## Table of Contents
+
+1. [Problem Statement](#🚩-problem-statement)
+2. [Solution](#💡-solution)
+3. [Features](#✨-features)
+4. [Project Structure](#project-structure)
+5. [Configuration](#⚙️-configuration)
+6. [AWS Setup](#👩🏻-aws-setup)
+7. [Getting Started](#🚀-getting-started)
+    - [Clone the repo](#step-1-clone-the-repo)
+    - [Setup .env file](#step-2-setup-env-file)
+    - [Backend Setup](#step-3-backend-setup)  
+    - [Run Microservice Backends](#step-4-run-following-microservices-backend)
+    - [Setup Frontend](#step-5-setup-frontend)
+8. [Future Customization](#🧩-future-customization)
+9. [Security & Privacy](#️🛡️-security-&-privacy)
+10. [References](#📚-references)
+11. [Contact](#📬-contact)
+12. [Contributions](#🤝-contributing)
+13. [Licence](#📄-license)
+
+
 ## 🚩 Problem Statement
 Organizations need secure, scalable, and accurate chatbots that can answer questions based on their own documents, not just public internet data. 
 
@@ -234,8 +256,8 @@ For questions or support, open an issue or contact the maintainers.
 
 
 ## 🤝 Contributing
-Pull requests are welcome! See CONTRIBUTING.md.
+Pull requests are welcome! See [CONTRIBUTIONS.md](CONTRIBUTIONS.md).
 
 
 ## 📄 License
-This repo is under MIT Licence support.
+This repo is under [MIT Licence](LICENCE) support.
