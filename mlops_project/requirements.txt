@@ -20,7 +20,20 @@ feast
 feast[redis]
 kserve
 mlflow
+mlflow==3.1.0
+psycopg[binary]
 azure-identity
 azure-storage-blob
+psutil
+pynvml
+xgboost
+# evidently
+# kserve==0.15.2
+# feast
+# feast[redis]
+# kserve
+# mlflow
+# azure-identity
+# azure-storage-blob
 # protobuf==5.29.0  # Downgraded to match Feast's generated code version
 psycopg[binary]

@@ -33,6 +33,7 @@ def model_training(X_train, y_train, classifier):
     model_pipeline.fit(X_train, y_train)
 
     try:
+        handle = pynvml.nvmlDeviceGetHandleByIndex(0)
         gpu_end = pynvml.nvmlDeviceGetUtilizationRates(handle).gpu
         gpu_mem_end = pynvml.nvmlDeviceGetMemoryInfo(handle).used / (1024 ** 2)  # MB
         pynvml.nvmlShutdown()

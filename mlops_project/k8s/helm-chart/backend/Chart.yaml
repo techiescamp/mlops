@@ -1,0 +1,4 @@
+apiVersion: v2
+name: mlops-app
+version: 0.1.0
+description: A Helm chart for the MLOps backend 
