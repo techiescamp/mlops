@@ -20,15 +20,11 @@ feast
 feast[redis]
 kserve
 mlflow
-mlflow==3.1.0
-psycopg[binary]
 azure-identity
 azure-storage-blob
 psutil
 pynvml
-xgboost
-# evidently
-# kserve==0.15.2
+evidently
 # feast
 # feast[redis]
 # kserve
