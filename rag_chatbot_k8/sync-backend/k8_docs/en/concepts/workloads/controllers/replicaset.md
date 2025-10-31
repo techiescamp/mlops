@@ -323,7 +323,7 @@ ReplicaSets do not support a rolling update directly.
 
 {{< feature-state feature_gate_name="DeploymentReplicaSetTerminatingReplicas" >}}
 
-You can enable this feature it by setting the `DeploymentReplicaSetTerminatingReplicas`
+You can enable this feature by setting the `DeploymentReplicaSetTerminatingReplicas`
 [feature gate](/docs/reference/command-line-tools-reference/feature-gates/)
 on the [API server](/docs/reference/command-line-tools-reference/kube-apiserver/)
 and on the [kube-controller-manager](/docs/reference/command-line-tools-reference/kube-controller-manager/)
@@ -408,7 +408,7 @@ Alternatively, you can use the `kubectl autoscale` command to accomplish the sam
 (and it's easier!)
 
 ```shell
-kubectl autoscale rs frontend --max=10 --min=3 --cpu-percent=50
+kubectl autoscale rs frontend --max=10 --min=3 --cpu=50%
 ```
 
 ## Alternatives to ReplicaSet

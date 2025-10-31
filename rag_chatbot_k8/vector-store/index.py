@@ -7,7 +7,7 @@ from typing import List
 from langchain_community.vectorstores import FAISS
 from langchain_openai import AzureOpenAIEmbeddings
 from langchain_community.docstore.in_memory import InMemoryDocstore
-from langchain.schema import Document
+from langchain_core.documents import Document
 from faiss import IndexFlatL2
 from dotenv import load_dotenv
 
@@ -19,8 +19,8 @@ VECTOR_STORE_PATH = "vector_store"
 INDEX_NAME = "index"
 EMBEDDING_DIM = 1536  # for Azure text-embedding-ada-002, adjust if needed
 
-PORT = int(os.environ["PORT"])
-HOST = os.environ["HOST"]
+PORT = int(os.environ.get("VECTOR_DB_PORT", "8001"))
+HOST = os.environ.get("VECTOR_DB_HOST", "localhost")
 
 
 # Fast API Setup
@@ -115,7 +115,6 @@ async def search_query(request: QueryRequest):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-
 
 
 @app.get("/health")

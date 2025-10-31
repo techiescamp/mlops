@@ -3,33 +3,24 @@ flask
 flask-cors
 pydantic
 pandera[pandas]
-<<<<<<< HEAD
-
-
-# mlflow
+# protobuf==4.25.3
+uvicorn==0.30.6
+# feast==0.43.0
+# feast[redis]
+# mlflow==3.1.0
+# psycopg[binary]
+# kserve==0.15.2
 # azure-identity
 # azure-storage-blob
-# protobuf==5.29.0  # Downgraded to match Feast's generated code version
-=======
-protobuf==4.25.3
-uvicorn==0.30.6
-feast==0.43.0
-feast[redis]
-mlflow==3.1.0
-psycopg[binary]
-# kserve==0.15.2
-azure-identity
-azure-storage-blob
 psutil
 pynvml
 evidently
-
-# feast
-# feast[redis]
-# kserve
-# mlflow
-# azure-identity
-# azure-storage-blob
+xgboost
+feast
+feast[redis]
+kserve
+mlflow
+azure-identity
+azure-storage-blob
 # protobuf==5.29.0  # Downgraded to match Feast's generated code version
-# psycopg[binary]
->>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57
+psycopg[binary]

@@ -9,14 +9,15 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from langchain.schema import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import AzureOpenAIEmbeddings
 from dotenv import load_dotenv
-
 #  for hash code
 import hashlib
 import json
+
+load_dotenv()
 
 HASH_DB_PATH = Path("hash_files.json")
 
