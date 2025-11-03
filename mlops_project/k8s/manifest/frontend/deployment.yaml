@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: kserve
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: techiescamp/employee-attrition-ui:4.0.0
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PREDICTION_URL
+              value: "http://employee-attrition-backend.kserve.svc.cluster.local:8000/predict"

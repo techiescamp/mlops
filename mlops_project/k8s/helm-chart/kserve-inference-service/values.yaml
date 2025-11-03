@@ -1,0 +1,11 @@
+image: techiescamp/custom-kserve:4.0.0
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+env:
+  MLFLOW_TRACKING_URI: "http://mlflow.mlflow.svc.cluster.local:5000"
+azureStorageConnectionString: <azure-storage-connection-string> 

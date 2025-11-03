@@ -1,0 +1,15 @@
+image: techiescamp/employee-attrition-ui:4.0.0
+replicaCount: 1
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+service:
+  type: NodePort
+  port: 3000
+  nodePort: 31020
+env:
+  PREDICTION_URL: "http://employee-attrition-backend.predictor-backend.svc.cluster.local:8000/predict"
