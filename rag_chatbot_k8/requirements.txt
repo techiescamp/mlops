@@ -1,0 +1,14 @@
+langchain==0.3.0
+langchain-community==0.3.0
+langchain-core==0.3.0
+langchain-text-splitters==0.3.0
+langchain-openai
+fastapi
+uvicorn
+python-dotenv
+scikit-learn
+requests
+faiss-cpu
+markdown
+pydantic
+typing

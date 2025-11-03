@@ -13,7 +13,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain_community.chat_message_histories import ChatMessageHistory
 
 # load env variables
-# load_dotenv()
+load_dotenv()
 
 AZURE_ENDPOINT = os.environ["AZURE_ENDPOINT"]
 AZURE_API_KEY = os.environ["AZURE_API_KEY"]
@@ -21,8 +21,8 @@ AZURE_CHAT_DEPLOYMENT = os.environ["AZURE_CHAT_DEPLOYMENT"]
 AZURE_OPENAI_API_VERSION = os.environ["AZURE_OPENAI_API_VERSION"]
 
 VECTOR_DB_URL = os.environ["VECTOR_DB_URL"]
-HOST = os.environ["HOST"]
-PORT = int(os.environ["PORT"])
+HOST = os.environ.get("MAIN_HOST", "localhost")
+PORT = int(os.environ.get("MAIN_PORT", "8000"))
 
 
 # Azure AI configuration

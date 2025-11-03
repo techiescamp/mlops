@@ -1,16 +1,10 @@
 import json
 import requests
+import pandas as pd
 
 
-<<<<<<< HEAD
-FEAST_SERVER_URL = "http://localhost:5050"
-# FEAST_SERVER_URL = "http://4.154.210.230:30800"
-=======
 # FEAST_SERVER_URL = "http://localhost:5050"
-FEAST_SERVER_URL = "http://4.154.210.230:30800"
-
->>>>>>> 802631f5eca657d7ec6984c1ef9a4aeca3d47f57
-
+FEAST_SERVER_URL = "http://4.246.120.68:30800"
 
 try:
     payload = {
@@ -25,8 +19,14 @@ try:
             data=json.dumps(payload),
             headers=headers
         )
-    # feature_names = response.json().get('metadata', {}).get('feature_names', [])
-    feature_names = response.json()
+    feature_names = response.json()['metadata']['feature_names']
+    results = response.json()['results']
+
+    values = [r['values'][0] for r in results]
+
+    df = pd.DataFrame([values], columns=feature_names)
+    print(df)
+            
     print(f"Feature_name: {feature_names}")
 except Exception as e:
      print(f"error: {e}")

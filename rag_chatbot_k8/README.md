@@ -4,29 +4,26 @@
 **RAG** - **Retrieval Augmented Generation** is a workflow that's simplifies the use of generating content by taking one's own knowledge base as reference. In fine-tuning, we have to store large content of data in the model, which can be resource-intensive and time-consuming, RAG streamlines the process by retrieving relevant information from a knowledge base dynamically and combining it with a language model to generate accurate, context-specific responses without the need for extensive retraining.
 
 
-## Github Actions workflow steps:
--------------------------------------------
-On push and pull requests follow the below actions:
-
-Backend: 
-- python version - 3.13.3
-- Install dependencies - `pip install -r requirements.txt`
-- Run backend code - `pyton app.py` or `uvicorn main:app --reload`
-
-Frontend:
-- node version - 22.14.0
-- Install dependencies - `npm install`
-- Run code - `npm run build`
-
-Deploy:
-- deploy both backend and frontend
-
-
-## Project Workflow
+## Folder Structure
 -----------------------------------------------------------------------------------
 
-![rag-workflow-gif](assets/rag-1.gif)
+```bash
+mlops
+|__ frontend/
+|__ main_backend/
+  |__ main.py
+  |__ /*
+|__ sync_backend/
+  |__ index.py
+  |__ /*
+|__ vector_store
+  |__ index.py
+  |__ /*
+|__ requirements.txt
+|__ .env
+|__ README.md
 
+```
 
 ## Getting Started
 -----------------------------------------------------------------------------
@@ -47,24 +44,7 @@ git clone https://github.com/techiescamp/mlops.git
 cd rag_chatbot_k8
 ```
 
-### 2. Install dependencies
-### i. sync-docs folder:
-
-- Create .env
-
-```bash
-# .env
-AZURE_ENDPOINT=<http://your-azure-resource>
-AZURE_API_KEY=<your-api-key-from-azure>
-
-AZURE_EMBEDDING_DEPLOYMENT=<text-embedding-model-model>
-AZURE_EMBEDDING_VERSION=<text-embedding-model-version-date-on-azure>
-
-K8_URL=<k8-github-repo-url>
-VECTOR_DB_URL=<vector-db-url>
-```
-
-- Create venv 
+### 2. Create Virtual Environment
 
 ```bash
 python -m venv venv
@@ -73,151 +53,48 @@ venv/Scripts/activate (for windows)
 source ./venv/Scripts/activate (for bash)
 ```
 
-- Install requirements.txt
+### 3. Install required libraries
 
 ```bash
 pip install -r requirements.txt
 ```
 
-- Run code
+### 4. Vector Store DB Setup
+
+Run the script
 
 ```bash
+cd vector_store
 python index.py
 ```
 
-<!-- ------------- -->
+### Sync Backend Setup
 
-### vector-db folder
-
-- Create .env
+Run the script
 
 ```bash
-# .env
-AZURE_ENDPOINT=<http://your-azure-resource>
-AZURE_API_KEY=<your-api-key-from-azure>
-
-AZURE_EMBEDDING_DEPLOYMENT=<text-embedding-model-model>
-AZURE_EMBEDDING_VERSION=<text-embedding-model-version-date-on-azure>
-
-PORT=<port>
-HOST=<vector-db-url-name>
-```
-
-Create venv 
-
-```bash
-python -m venv venv
-
-venv/Scripts/activate (for windows)
-source ./venv/Scripts/activate (for bash)
-
-```
-
-- Install requirements.txt
-
-```bash
-pip install -r requirements.txt
-```
-
-Run code
-
-```bash
+cd sync_backend
 python index.py
-
-or 
-
-uv run index.py (preferred)
 ```
 
-<!-- ------------ -->
+### Main Backend Setup
 
-### Main Backend folder:
-
-- Create .env
+Run the script
 
 ```bash
-# .env
-AZURE_ENDPOINT=<http://your-azure-resource>
-AZURE_API_KEY=<your-api-key-from-azure>
-
-AZURE_CHAT_DEPLOYMENT=<gpt-model>
-OPENAI_API_VERSION=<gpt-model-version-date-on-azure>
-
-VECTOR_DB_URL=<backend-url>
-HOST=<dns-name>
-PORT=<port>
-```
-
-- Create venv 
-
-```bash
-python -m venv venv
-
-venv/Scripts/activate (for windows)
-source ./venv/Scripts/activate (for bash)
-```
-
-- Install requirements.txt
-
-```bash
-pip install -r requirements.txt
-```
-
-
-- Run code
-
-```bash
+cd main_backend
 python main.py
-
-or 
-
-uv run main.py (preferred)
 ```
-
-<!-- ----------------------- -->
 
 ### For Frontend Setup
 
-- If you are in different folder => `rag_Chatbot/frontend/` 
-- If you are in same folder => `frontend/`
 
 ```bash
 cd frontend
-```
 
-- Install dependencies
-```bash
 npm install
-```
 
-- Run the frontend application
-```bash
-npm start (for developement environement)
-
-or
-
-npm run build (for production environment)
-```
-
-```
-
-### Example Query
-```json
-{
-  "query": "What is memoization?"
-}
-```
-
-### Example Response
-
-```json
-{
-  "answer": "Memoization is an optimization technique used primarily to speed up computer programs by storing the results of expensive function calls and reusing them when the same inputs occur again.",
-  "sources": [
-    {"filename": "concepts.md", "chunk_id": 1},
-    {"filename": "optimization.md", "chunk_id": 3}
-  ]
-}
+npm start
 ```
 
 
@@ -228,97 +105,13 @@ npm run build (for production environment)
 - **Efficient:** Uses vector search (FAISS) for fast document retrieval.
 - **Cost-Conscious:** Tracks token usage and estimates costs for Azure OpenAI API calls.
 - **Customizable:** Easily adapt the pipeline to other document formats or LLMs.
-=======
-### For sync-docs:
 
-1. create .env
 
-2. create venv 
-
-```bash
-python -m venv venv
-
-venv/Scripts/activate (for windows)
-source ./venv/Scripts/activate (for bash)
-```
-
-3. run code
-
-```bash
-python index.py
-```
-
-<!-- ------------- -->
-
-### For vector-db:
-
-1. create .env
-
-2. create venv 
-
-```bash
-python -m venv venv
-
-venv/Scripts/activate (for windows)
-source ./venv/Scripts/activate (for bash)
-
-```
-
-3. run code
-
-```bash
-python index.py
-
-or 
-
-uv run index.py (preferred)
-```
-
-<!-- ------------ -->
-
-### For backend:
-
-1. create .env
-
-2. create venv 
-
-```bash
-python -m venv venv
-
-venv/Scripts/activate (for windows)
-source ./venv/Scripts/activate (for bash)
-
-```
-
-3. run code
-
-```bash
-python main.py
-
-or 
-
-uv run main.py (preferred)
-```
-
-### Prompt
-
-I have Kubernetes manifest files located in a folder named manifest. I need you to convert these manifests into a Helm chart, placing the chart inside a folder named helm-chart, which is in the same directory as the manifest folder.
-
-While converting, please also do the following:
-
-Add resource requests and limits for CPU and memory
-
-Define proper readiness and liveness probes
-
-Include a basic NetworkPolicy that only allows traffic from within the namespace
-
-Make sure the Helm chart follows a standard structure templates/, values.yaml, Chart.yaml, etc.
-
-### Contribution
+## Contribution
 -----
-We welcome contributions from the security community. Please read our ![Contributing Guidelines](../CONTRIBUTION.md) before submitting pull requests.
+We welcome contributions from the security community. Please read our [Contributing Guidelines](../CONTRIBUTION.md) before submitting pull requests.
 
-### License
-This project is licensed under the ![MIT License](../LICENCE). See the  file for details
-=======
+## License
+This project is licensed under the [MIT License](../LICENCE). See the  file for details
+
 
